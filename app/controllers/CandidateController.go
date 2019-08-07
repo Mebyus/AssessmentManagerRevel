@@ -9,6 +9,10 @@ type CandidatesController struct {
 	*revel.Controller
 }
 
+func (controller *CandidatesController) Get() revel.Result {
+
+}
+
 func (controller *CandidatesController) GetById() revel.Result {
 	controller.Response.Status = 200
 	can := structures.Candidate{
@@ -21,4 +25,16 @@ func (controller *CandidatesController) GetById() revel.Result {
 		"ee@mail.com",
 	}
 	return controller.RenderJSON(can)
+}
+
+func (controller *CandidatesController) Create() revel.Result {
+
+}
+
+func (controller *CandidatesController) Delete() revel.Result {
+
+}
+
+func (controller *CandidatesController) Update() revel.Result {
+
 }
