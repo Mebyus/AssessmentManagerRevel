@@ -9,8 +9,23 @@ module:testrunner
 
 GET     /                                       App.Index
 
-GET     /candidates                             CandidatesController.Get
-GET     /candidates/:id                         CandidatesController.GetById
+GET     /candidate                              CandidateController.Get
+GET     /candidate/:id                          CandidateController.GetById
+PUT     /candidate                              CandidateController.Create
+POST    /candidate/:id                          CandidateController.Update
+DELETE  /candidate/:id                          CandidateController.Delete
+
+# GET     /employee                               EmployeeController.Get
+# GET     /employee/:id                           EmployeeController.GetById
+# PUT     /employee                               EmployeeController.Create
+# POST    /employee/:id                           EmployeeController.Update
+# DELETE  /employee/:id                           EmployeeController.Delete
+
+# GET     /assessment                             AssessmentController.Get
+# GET     /assessment/:id                         AssessmentController.GetById
+# PUT     /assessment                             AssessmentController.Create
+# POST    /assessment/:id                         AssessmentController.Update
+# DELETE  /assessment/:id                         AssessmentController.Delete
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
