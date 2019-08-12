@@ -22,8 +22,8 @@ func (controller *CandidateController) Get() revel.Result {
 	var candidates *[]structures.Candidate
 	var err error
 
-	controller.provider = new(providers.CandidateProvider)
-	err = controller.provider.Connect("postgres", "lfqljcneg", "assessment_manager_db")
+	controller.provider = &providers.CandidateProvider{}
+	err = controller.provider.Init()
 	if err != nil {
 		return controller.RenderError(err)
 	}
@@ -52,8 +52,8 @@ func (controller *CandidateController) Get() revel.Result {
 // в формате JSON.
 func (controller *CandidateController) GetById() revel.Result {
 	id := controller.Params.Get("id")
-	controller.provider = new(providers.CandidateProvider)
-	err := controller.provider.Connect("postgres", "lfqljcneg", "assessment_manager_db")
+	controller.provider = &providers.CandidateProvider{}
+	err := controller.provider.Init()
 	if err != nil {
 		return controller.RenderError(err)
 	}
