@@ -1,8 +1,8 @@
 class AssessmentsWorkspaceComponent {
-    constructor() {
+    constructor(url) {
         this.picker = new AssessmentPickerComponent(this);
         this.viewer = new AssessmentViewerComponent(this);
-        this.model = new AssessmentProvider();
+        this.model = new AssessmentRequester(url);
         this.currentAssessmentId = null;
     }
 
@@ -16,14 +16,12 @@ class AssessmentsWorkspaceComponent {
     }
 
     updateList() {
-        let assessments = this.model.getAll();
-        this.picker.set(assessments);
+        this.model.getAll(assessments => this.picker.set.call(this.picker, assessments));
     }
 
     viewAssessment(id) {
         this.currentAssessmentId = id;
-        let assessment = this.model.get(id);
-        this.viewer.view(assessment);
+        this.model.get(id, assessment => this.viewer.view.call(this.viewer, assessment));
     }
 
     clearViewer() {
@@ -31,21 +29,20 @@ class AssessmentsWorkspaceComponent {
     }
 
     deleteCurrentAssessment() {
-        this.model.delete(this.currentAssessmentId);
-        this.clearViewer();
-        this.updateList();
+        this.model.delete(this.currentAssessmentId, () => function() {
+            this.clearViewer();
+            this.updateList();
+        }.call(this)); 
     }
 
     createFromViewerData() {
         let input = this.viewer.getInputData();
-        this.model.add(input);
-        this.updateList();
+        this.model.add(input, () => this.updateList());
     }
 
     updateFromViewerData() {
         let input = this.viewer.getInputData();
-        this.model.update(this.currentAssessmentId, input);
-        this.updateList();
+        this.model.update(this.currentAssessmentId, input, () => this.updateList());
     }
 
     changeViewerMode(mode) {

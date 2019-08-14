@@ -1,18 +1,19 @@
 class CandidateViewerComponent {
-    constructor(workspace) {
+    constructor(workspace, url) {
         this.workspace = workspace;
         this.mode = "view";
+        this.selector = new AssessmentSelectorComponent(this);
+        this.model = new AssessmentRequester(url);
     }
 
     init() {
+        this.selector.init();
+
         this.personalForm = $$("candidatePersonalInfoForm");
         
         this.confirmButton = $$("candidateConfirmButton");
         this.confirmButton.attachEvent("onItemClick", getCandidateConfirmClickHandler(this.workspace));
-        
-        // this.editButton = $$("candidateEditButton");
-        // this.editButton.attachEvent("onItemClick", getCandidateEditClickHandler(this.workspace));
-        
+              
         this.deleteButton = $$("candidateDeleteButton");
         this.deleteButton.attachEvent("onItemClick", getCandidateDeleteClickHandler(this.workspace));
         
@@ -28,6 +29,7 @@ class CandidateViewerComponent {
             email: candidate.email,
             phone: candidate.phone,
         });
+        this.selector.setList(candidate.assessmentList);
     }
 
     activateViewMode() {
@@ -83,21 +85,8 @@ class CandidateViewerComponent {
             ]
         }
         
-        let assessmentForm = {
-            view: "form",
-            elements: [
-                {label: "Date", labelPosition: "top", view:"combo", value:"27 Aug",
-                    options:["27 Aug", "13 Jul", "14 Sep", "9 Aug"]}
-            ],
-        }
+        let assessmentForm = this.selector.getWebixUI();
         
-        // let contactForm = {
-        //     view: "form",
-        //     elements: [
-        //         {},
-        //     ]
-        // }
-
         let scrollableViewerPartUI = { 
             rows:[
                 personalInfoForm,
@@ -106,14 +95,8 @@ class CandidateViewerComponent {
                         {view: "label", label: "Assessment", align: "center"},
                         assessmentForm,
                     ],
-                    // cols: [{ rows: [
-                    //     {view: "label", label: "Contacts", align: "center"},
-                    //     contactForm,
-                    // ]
-                    // },
-                    // ],
                 },
-                {},
+                // {},
             ]
         }
 
@@ -126,7 +109,6 @@ class CandidateViewerComponent {
                     elements: [
                         {view:"label", label:"Candidate info", align:"center"},
                         {id: "candidateConfirmButton", view:"button", value:"Confirm"},
-                        // {id: "candidateEditButton", view:"button", value:"Edit"},
                         {id: "candidateDeleteButton", view:"button", value:"Delete"},
                     ] 
                 },

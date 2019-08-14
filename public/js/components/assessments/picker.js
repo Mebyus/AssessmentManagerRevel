@@ -32,7 +32,7 @@ class AssessmentPickerComponent {
             id: "assessmentTable",
             view: "datatable",
             columns: [
-                {id:"date", header:"Date", fillspace:true},
+                {id:"dateTime", header:"Date", fillspace:true},
                 {id:"numberOfCandidates", header:"Candidates", minWidth:60},
                 {id:"numberOfEmployees", header:"Employees", fillspace:true}
             ],

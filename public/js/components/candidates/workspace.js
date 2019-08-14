@@ -1,10 +1,8 @@
-// import CandidateViewerProvider from "./models/candidates/viewer.js";
-
 class CandidatesWorkspaceComponent {
-    constructor() {
+    constructor(url) {
         this.picker = new CandidatePickerComponent(this);
-        this.viewer = new CandidateViewerComponent(this);
-        this.model = new CandidateProvider();
+        this.viewer = new CandidateViewerComponent(this, url);
+        this.model = new CandidateRequester(url);
         this.currentCandidateId = null;
     }
 
@@ -13,18 +11,18 @@ class CandidatesWorkspaceComponent {
         this.viewer.init();
         this.changeViewerMode("view");
         this.updateList();
+
         console.log("candidates workspace loaded.");
     }
 
     updateList() {
-        let candidates = this.model.getAll();
-        this.picker.set(candidates);
+        this.model.getAll(candidates => this.picker.set.call(this.picker, candidates));
     }
 
     viewCandidate(id) {
         this.currentCandidateId = id;
-        let candidate = this.model.get(id);
-        this.viewer.view(candidate);
+        this.model.get(id, candidate => this.viewer.view.call(this.viewer, candidate));
+        this.viewer.model.getAll(assessments => this.viewer.selector.setOptions(assessments));
     }
 
     clearViewer() {
@@ -32,21 +30,20 @@ class CandidatesWorkspaceComponent {
     }
 
     deleteCurrentCandidate() {
-        this.model.delete(this.currentCandidateId);
-        this.clearViewer();
-        this.updateList();
+        this.model.delete(this.currentCandidateId, () => function() {
+            this.clearViewer();
+            this.updateList();
+        }.call(this));        
     }
 
     createFromViewerData() {
         let input = this.viewer.getInputData();
-        this.model.add(input);
-        this.updateList();
+        this.model.add(input, () => this.updateList());
     }
 
     updateFromViewerData() {
         let input = this.viewer.getInputData();
-        this.model.update(this.currentCandidateId, input);
-        this.updateList();
+        this.model.update(this.currentCandidateId, input, () => this.updateList());
     }
 
     changeViewerMode(mode) {

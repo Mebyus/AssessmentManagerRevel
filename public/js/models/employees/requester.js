@@ -1,10 +1,10 @@
-class AssessmentRequester {
+class EmployeeRequester {
     constructor(url) {
         this.url = url;
     }
 
     get(id, callAfterResponse) {
-        let url = this.url + "/assessment" + "/" + id;
+        let url = this.url + "/employee" + "/" + id;
         let options = {
             method: "GET",
         };
@@ -14,14 +14,14 @@ class AssessmentRequester {
         .then(result => callAfterResponse(result));
     }
 
-    add(assessment, callAfterResponse) {
-        let url = this.url + "/assessment";
+    add(employee, callAfterResponse) {
+        let url = this.url + "/employee";
         let options = {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(assessment),
+            body: JSON.stringify(employee),
         };
 
         fetch(url, options)
@@ -29,15 +29,15 @@ class AssessmentRequester {
         .then(result => callAfterResponse(result));
     }
 
-    update(id, assessment, callAfterResponse) {
-        assessment.id = id;
-        let url = this.url + "/assessment" + "/" + id;
+    update(id, employee, callAfterResponse) {
+        employee.id = id;
+        let url = this.url + "/employee" + "/" + id;
         let options = {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(assessment),
+            body: JSON.stringify(employee),
         };
 
         fetch(url, options)
@@ -46,7 +46,7 @@ class AssessmentRequester {
     }
 
     delete(id, callAfterResponse) {
-        let url = this.url + "/assessment" + "/" + id;
+        let url = this.url + "/employee" + "/" + id;
         let options = {
             method: "DELETE",
         };
@@ -56,7 +56,7 @@ class AssessmentRequester {
     }
 
     getAll(callAfterResponse) {
-        let url = this.url + "/assessment";
+        let url = this.url + "/employee";
         let options = {
             method: "GET",
         };

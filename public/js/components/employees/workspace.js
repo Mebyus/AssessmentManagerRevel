@@ -1,8 +1,8 @@
 class EmployeesWorkspaceComponent {
-    constructor() {
+    constructor(url) {
         this.picker = new EmployeePickerComponent(this);
         this.viewer = new EmployeeViewerComponent(this);
-        this.model = new EmployeeProvider();
+        this.model = new EmployeeRequester(url);
         this.currentEmployeeId = null;
     }
 
@@ -16,14 +16,12 @@ class EmployeesWorkspaceComponent {
     }
 
     updateList() {
-        let employees = this.model.getAll();
-        this.picker.set(employees);
+        this.model.getAll(employees => this.picker.set.call(this.picker, employees));
     }
 
     viewEmployee(id) {
         this.currentEmployeeId = id;
-        let employee = this.model.get(id);
-        this.viewer.view(employee);
+        this.model.get(id, employee => this.viewer.view.call(this.viewer, employee));
     }
 
     clearViewer() {
@@ -31,21 +29,20 @@ class EmployeesWorkspaceComponent {
     }
 
     deleteCurrentEmployee() {
-        this.model.delete(this.currentEmployeeId);
-        this.clearViewer();
-        this.updateList();
+        this.model.delete(this.currentEmployeeId, () => function() {
+            this.clearViewer();
+            this.updateList();
+        }.call(this));   
     }
 
     createFromViewerData() {
         let input = this.viewer.getInputData();
-        this.model.add(input);
-        this.updateList();
+        this.model.add(input, () => this.updateList());
     }
 
     updateFromViewerData() {
         let input = this.viewer.getInputData();
-        this.model.update(this.currentEmployeeId, input);
-        this.updateList();
+        this.model.update(this.currentEmployeeId, input, () => this.updateList());
     }
 
     changeViewerMode(mode) {

@@ -1,11 +1,10 @@
-// import {NavigationBarComponent} from "./components/navigation/navigation.js";
-
 class AppWorkspace {
-    constructor() {
+    constructor(url) {
+        this.url = url;
         this.navigationBar = new NavigationBarComponent();
-        this.candidatesWorkspace = new CandidatesWorkspaceComponent();
-        this.assessmentsWorkspace = new AssessmentsWorkspaceComponent();
-        this.employeesWorkspace = new EmployeesWorkspaceComponent();
+        this.candidatesWorkspace = new CandidatesWorkspaceComponent(url);
+        this.assessmentsWorkspace = new AssessmentsWorkspaceComponent(url);
+        this.employeesWorkspace = new EmployeesWorkspaceComponent(url);
     }
 
     init() {
@@ -47,5 +46,7 @@ class AppWorkspace {
     }
 }
 
-testApp = new AppWorkspace();
+let url = "http://localhost:9000";
+
+testApp = new AppWorkspace(url);
 testApp.init();

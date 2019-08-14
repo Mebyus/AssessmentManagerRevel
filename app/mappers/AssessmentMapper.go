@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"errors"
 	"strconv"
-	"strings"
 )
 
 type AssessmentMapper struct {
@@ -16,7 +15,7 @@ type AssessmentMapper struct {
 func (mapper *AssessmentMapper) Init(connection *sql.DB) (error) {
 	err := mapper.Connect(connection)
 	if err != nil {
-		return fmt.Errorf("Создание соединения AssessmentMapper с БД:", err)
+		return fmt.Errorf("Создание соединения AssessmentMapper с БД:\n", err)
 	}
 	return nil
 }
@@ -56,12 +55,12 @@ func (mapper *AssessmentMapper) Get() (*[]structures.Assessment, error) {
 // GET /assessment/:id на получение собеседования по заданному id в БД.
 func (mapper *AssessmentMapper) GetById(id string) (*structures.Assessment, error) {
 	assessment := structures.Assessment{}
+
+	// Запрашиваем основную информацию о собеседовании
 	columnString, _ := tagString("sql", assessment)
 	query := "SELECT " + columnString +
 		" FROM assessment WHERE id = $1;"
-
 	rows, err := mapper.connection.Query(query, id)
-
 	if err != nil {
 		return nil, err
 	}
@@ -84,144 +83,156 @@ func (mapper *AssessmentMapper) GetById(id string) (*structures.Assessment, erro
 		return nil, errors.New("Unexpected query result.")
 	}
 
+	// Запрашиваем информацию о кандидатах, назначенных на собеседование
+	query = "SELECT id, assessment, candidate, is_confirmed, result, comment " +
+			"FROM candidate_for_assessment WHERE assessment = $1"
+	candidateRows, err := mapper.connection.Query(query, id)
+	if err != nil {
+		return nil, err
+	}
+	for candidateRows.Next() {
+		isConfirmed := sql.NullBool{}
+		candidate := structures.CandidateForAssessment{}
+		err = candidateRows.Scan(&candidate.Id, &candidate.AssessmentId, &candidate.CandidateId, &isConfirmed,
+				&candidate.Result, &candidate.Comment)
+
+		if isConfirmed.Valid {
+			candidate.IsConfirmed = fmt.Sprintf("%t", isConfirmed.Bool)
+		} else {
+			candidate.IsConfirmed = "null"
+		}
+
+		if err != nil {
+			defer func() {
+				closeErr := candidateRows.Close()
+				if closeErr != nil {
+					fmt.Println(closeErr)
+				}
+			}()
+			return nil, err
+		}
+		assessment.CandidateList = append(assessment.CandidateList, &candidate)
+	}
+
+	// Запрашиваем информацию о сотрудниках, назначенных на собеседование
+	query = "SELECT id, assessment, employee " +
+		"FROM assessment_employee WHERE assessment = $1"
+	employeeRows, err := mapper.connection.Query(query, id)
+	if err != nil {
+		return nil, err
+	}
+	for employeeRows.Next() {
+		employee := structures.AssessmentEmployee{}
+		err = employeeRows.Scan(&employee.Id, &employee.AssessmentId, &employee.EmployeeId)
+
+		if err != nil {
+			defer func() {
+				closeErr := employeeRows.Close()
+				if closeErr != nil {
+					fmt.Println(closeErr)
+				}
+			}()
+			return nil, err
+		}
+		assessment.EmployeeList = append(assessment.EmployeeList, &employee)
+	}
+
 	return &assessment, nil
 }
 
 // AssessmentMapper.Create метод оформляет и передает запрос
 // PUT /assessment/:id на создание записи собеседования в БД.
 func (mapper *AssessmentMapper) Create(assessment *structures.Assessment) (*structures.Assessment, error) {
-	var newId string
+	var newId int64
+	var strId string
 
+	// Добавляем основную информацию о собеседовании
 	columnString, columnNum := tagString("sql_ins", structures.Assessment{})
 	query := "INSERT INTO assessment (" + columnString +
 		") VALUES " + substStr(columnNum, "$") + " RETURNING id;"
+	row := mapper.connection.QueryRow(query, tagValue("sql_ins", assessment)...)
 
-	row:= mapper.connection.QueryRow(query, tagValue("sql_ins", assessment)...)
-
+	// Получаем id нового собеседования из БД
 	err := row.Scan(&newId)
 	if err != nil {
 		return nil, fmt.Errorf("Добавление собеседования в БД:", err)
 	}
+	strId = strconv.FormatInt(newId, 10)
+	assessment.SetNewId(newId)
 
-	err = mapper.AlterAssessmentEmployee(newId, &assessment.EmployeeList)
+	// Изменяем таблицы связей сотрудников и кандидатов
+	err = mapper.CreateAssessmentEmployee(strId, assessment)
 	if err != nil {
-		return nil, fmt.Errorf("Изменение списка сотрудников на собеседование в БД:", err)
+		return nil, fmt.Errorf("Создание списка сотрудников на собеседование в БД:", err)
+	}
+
+	err = mapper.CreateAssessmentCandidate(strId, assessment)
+	if err != nil {
+		return nil, fmt.Errorf("Создание списка кандидатов на собеседование в БД:", err)
 	}
 
 	return assessment, nil
 }
 
-// findEmployee находит индекс элемента в срезе из AssessmentEmployee,
-// id которого совпадает со вторым аргументом функции.
-func findEmployee(slc []*structures.AssessmentEmployee, id int64) (int) {
-	for i := range slc {
-		if slc[i].EmployeeId == id {
-			return i
-		}
-	}
-	return -1
-}
-
-// FIXME Подобрать нормальное название
-// Возвращает строку -- список id записей в срезе из AssessmentEmployee
-func employeeSliceToStrId(slc []*structures.AssessmentEmployee) (string) {
-	strList := []string{}
-	for i := range slc {
-		strList = append(strList, fmt.Sprintf("%d", slc[i].Id))
-	}
-	return strings.Join(strList, ", ")
-}
-
-// FIXME Подобрать нормальное название
-// Возвращает строку -- список пар вида (assessment_id, employee_id) по срезу
-// из id сотрудников и фиксированного id собеседования.
-func employeeIdSliceToQuery(slc []int64, assessment_id int64) (string) {
-	strList := []string{}
-	strId := fmt.Sprintf("%d" ,assessment_id)
-	for i := range slc {
-		strList = append(strList, "(" + strId + ", " + fmt.Sprintf("%d", slc[i]) + ")")
-	}
-	return strings.Join(strList, ", ")
-}
-
-// TODO декомпозировать этого монстра
-// AssessmentMapper.AlterAssessmentEmployee вспомагательный метод запросов PUT и UPDATE,
-// предназначен для модификации таблицы связей собеседования и сотрудников.
-//
-// Аргументы:
-// id - id собеседования для модификации
-// empId - указатель на срез из id сотрудников
-//
-// Примечания:
-// Список сотрудников ПОЛНОСТЬЮ заменяет старый список в собеседовании с данным id;
-// недостающие записи добавляются, лишние удаляются.
-func (mapper *AssessmentMapper) AlterAssessmentEmployee(id string, empId *[]int64) (error) {
-	idInt64, err := strconv.ParseInt(id, 10, 64)
+// AssessmentMapper.AlterAssessmentEmployee вспомогательный метод запросов PUT и POST,
+// предназначен для создания связей собеседования и сотрудников.
+func (mapper *AssessmentMapper) CreateAssessmentEmployee(assessmentId string, assessment *structures.Assessment) (error) {
+	query := "INSERT INTO assessment_employee(assessment, employee) VALUES " +
+		assessment.EmployeeListStr() +
+		" ON CONFLICT DO NOTHING;"
+	_, err := mapper.connection.Exec(query)
 	if err != nil {
-		return fmt.Errorf("Преобразование id в int64:", err)
+		return fmt.Errorf("Добавление сотрудников на собеседование %s в БД:\n", assessmentId, err)
+	}
+	return nil
+}
+
+// AssessmentMapper.AlterAssessmentCandidate вспомогательный метод запросов PUT и POST,
+// предназначен для создания связей собеседования и кандидатов.
+func (mapper *AssessmentMapper) CreateAssessmentCandidate(assessmentId string, assessment *structures.Assessment) (error) {
+	query := "INSERT INTO candidate_for_assessment(assessment, candidate, is_confirmed, result, comment) VALUES " +
+		assessment.CandidateListStr() +
+		" ON CONFLICT DO NOTHING;"
+	_, err := mapper.connection.Exec(query)
+	if err != nil {
+		return fmt.Errorf("Добавление кандидатов на собеседование %s в БД:", assessmentId, err)
+	}
+	return nil
+}
+
+// AssessmentMapper.AlterAssessmentCandidate вспомогательный метод запросов POST,
+// предназначен для модификации таблицы связей собеседования и кандидатов.
+func (mapper *AssessmentMapper) AlterAssessmentCandidate(assessmentId string, assessment *structures.Assessment) (error) {
+	// Делаем запрос на удаление старых связей собеседования
+	query := "DELETE FROM candidate_for_assessment WHERE assessment = $1"
+	_, err := mapper.connection.Exec(query, assessmentId)
+	if err != nil {
+		return fmt.Errorf("Удаление кандидатов на собеседование %s в БД:", assessmentId, err)
 	}
 
-	// Делаем запрос на список сотрудников, приписанных к собеседованию
-	// с данным id
-	query := "SELECT (id, employee) " +
-				"FROM assessment_employee " +
-				"WHERE assessment = $1"
-	rows, err := mapper.connection.Query(query, id)
+	// Делаем запрос на добавление обновленных связей
+	err = mapper.CreateAssessmentCandidate(assessmentId, assessment)
 	if err != nil {
 		return err
 	}
 
-	aEmployees := []*structures.AssessmentEmployee{}
-	for rows.Next() {
-		aEmployee := structures.AssessmentEmployee{AssessmentId: idInt64}
-		err = rows.Scan(&aEmployee.Id, &aEmployee.EmployeeId)
+	return nil
+}
 
-		if err != nil {
-			defer func() {
-				closeErr := rows.Close()
-				if closeErr != nil {
-					fmt.Println(closeErr)
-				}
-			}()
-			return err
-		}
-		aEmployees = append(aEmployees, &aEmployee)
+// AssessmentMapper.AlterAssessmentEmployee вспомагательный метод запросов POST,
+// предназначен для модификации таблицы связей собеседования и сотрудников.
+func (mapper *AssessmentMapper) AlterAssessmentEmployee(assessmentId string, assessment *structures.Assessment) (error) {
+	// Делаем запрос на удаление старых связей собеседования
+	query := "DELETE FROM assessment_employee WHERE assessment = $1"
+	_, err := mapper.connection.Exec(query, assessmentId)
+	if err != nil {
+		return fmt.Errorf("Удаление сотрудников на собеседование %s в БД:\n", assessmentId, err)
 	}
 
-	// Ищем сотрудников, которых надо удалить или добавить в собеседование
-	aEmployeesToAdd := []int64{}
-	for i := range *empId {
-		if len(aEmployees) > 0 {
-			index := findEmployee(aEmployees, (*empId)[i])
-			if index == -1 {
-				aEmployeesToAdd = append(aEmployeesToAdd, (*empId)[i])
-			} else {
-				// Удаляем найденного сотрудника из списка
-				aEmployees[index] = aEmployees[len(aEmployees) - 1]
-				aEmployees = aEmployees[:len(aEmployees) - 1]
-			}
-		} else {
-			aEmployeesToAdd = append(aEmployeesToAdd, (*empId)[i])
-		}
-	}
-
-	// Удаляем оставшихся в aEmployee сотрудников, поскольку их не оказалось в списке empId
-	if len(aEmployees) > 0 {
-		query = fmt.Sprintf("DELETE FROM assessment_employee WHERE id IN (%s)", employeeSliceToStrId(aEmployees))
-		_, err = mapper.connection.Exec(query)
-		if err != nil {
-			return fmt.Errorf("Удаление сотрудников на собеседование из БД:", err)
-		}
-	}
-
-	// Добавляем новых сотрудников для этого собеседования
-	if len(aEmployeesToAdd) > 0 {
-		query = "INSERT INTO assessment_employee(assessment, employee) VALUES " +
-			employeeIdSliceToQuery(aEmployeesToAdd, idInt64)
-		_, err = mapper.connection.Exec(query)
-		if err != nil {
-			return fmt.Errorf("Добавление новых сотрудников на собеседование в БД:", err)
-		}
+	// Делаем запрос на добавление обновленных связей
+	err = mapper.CreateAssessmentEmployee(assessmentId, assessment)
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -229,15 +240,26 @@ func (mapper *AssessmentMapper) AlterAssessmentEmployee(id string, empId *[]int6
 // AssessmentMapper.Update метод оформляет и передает запрос
 // POST /assessment/:id на изменение записи собеседования в БД.
 func (mapper *AssessmentMapper) Update(assessment *structures.Assessment) (*structures.Assessment, error) {
+	strId := strconv.FormatInt(assessment.Id, 10)
+
+	// Обновляем основную информацию о собеседовании
 	setString, columnNum := tagSubstStr("sql_ins", *assessment)
 	query := "UPDATE assessment SET " +
 		setString +
 		"WHERE id = $" + strconv.Itoa(columnNum + 1) + ";"
-
 	_, err := mapper.connection.Exec(query, append(tagValue("sql_ins", assessment), assessment.Id)...)
-
 	if err != nil {
 		return nil, fmt.Errorf("Обновление собеседования в БД:", err)
+	}
+
+	// Обновляем таблицы связей сотрудников и кандидатов
+	err = mapper.AlterAssessmentEmployee(strId, assessment)
+	if err != nil {
+		return nil, err
+	}
+	err = mapper.AlterAssessmentCandidate(strId, assessment)
+	if err != nil {
+		return nil, err
 	}
 
 	return assessment, nil
