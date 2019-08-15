@@ -1,4 +1,4 @@
-class EmployeePickerComponent {
+export class EmployeePickerComponent {
     constructor(workspace) {
         this.workspace = workspace;
     }
@@ -18,7 +18,7 @@ class EmployeePickerComponent {
         this.table.refresh();
     }
 
-    getWebixUI() {
+    getWebixConfig() {
         let tableToolbar = {
             id: "employeeTableToolbar",
             view: "toolbar",

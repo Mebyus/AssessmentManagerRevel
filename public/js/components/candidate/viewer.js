@@ -1,4 +1,7 @@
-class CandidateViewerComponent {
+import {AssessmentSelectorComponent} from "./assessmentselector.js";
+import {AssessmentRequester} from "./../../models/assessments/provider.js";
+
+export class CandidateViewerComponent {
     constructor(workspace, url) {
         this.workspace = workspace;
         this.mode = "view";
@@ -30,31 +33,27 @@ class CandidateViewerComponent {
             phone: candidate.phone,
         });
         this.selector.setList(candidate.assessmentList);
+        this.selector.clear();
     }
 
     activateViewMode() {
-        // this.confirmButton.disable();
         this.deleteButton.enable();
-        // this.editButton.enable();
-        // this.personalForm.disable();
     }
 
     activateCreateMode() {
-        // this.confirmButton.enable();
         this.deleteButton.disable();
-        // this.editButton.disable();
-        // this.personalForm.enable();
     }
 
     clear() {
         this.personalForm.clear();
+        this.selector.clear();
     }
 
     getInputData() {
         return this.personalForm.getValues();
     }
 
-    getWebixUI() {
+    getWebixConfig() {
         let personalInfoForm = {
             id:"candidatePersonalInfoForm",
             view: "form",
@@ -85,7 +84,7 @@ class CandidateViewerComponent {
             ]
         }
         
-        let assessmentForm = this.selector.getWebixUI();
+        let assessmentForm = this.selector.getWebixConfig();
         
         let scrollableViewerPartUI = { 
             rows:[
@@ -147,12 +146,3 @@ function getCandidateDeleteClickHandler(workspace) {
     }
     return handler;
 }
-
-// function getCandidateEditClickHandler(workspace) {
-//     let handler = function () {
-//         if (workspace.viewer.mode === "view") {
-//             workspace.changeViewerMode("edit");
-//         }
-//     }
-//     return handler;
-// }

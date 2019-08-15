@@ -45,7 +45,7 @@ class SelectBox {
     }
 }
 
-class AssessmentViewerComponent {
+export class AssessmentViewerComponent {
     constructor(workspace) {
         this.workspace = workspace;
     }
@@ -93,7 +93,7 @@ class AssessmentViewerComponent {
         return this.dateForm.getValues();
     }
 
-    getWebixUI() {
+    getWebixConfig() {
         this.candidateSelector = new SelectBox([], getCandidateCard, "candidateSelector");
 
         let candidateSelectorUI = {
@@ -264,15 +264,6 @@ function getCandidateCard(box, candidate) {
     return card
 }
 
-function getUnselectClickHandler(box, itemId) {
-    let handler = function handleUnselectClick(id, event) {
-        let card = $$(id).getParentView();
-        card.getParentView().removeView(card);
-        box.unselect(itemId);
-    }
-    return handler;
-}
-
 function getEmployeeCard(box, employee) {
     let card = {
         id:"card" + employee.id,
@@ -290,7 +281,7 @@ function getEmployeeCard(box, employee) {
 
 function getUnselectClickHandler(box, itemId) {
     let handler = function (id, event) {
-        card = $$(id).getParentView();
+        let card = $$(id).getParentView();
         card.getParentView().removeView(card);
         box.unselect(itemId);
         let header = $$(box.parentViewId).getChildViews()[0];

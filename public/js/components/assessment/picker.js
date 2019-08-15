@@ -1,4 +1,4 @@
-class AssessmentPickerComponent {
+export class AssessmentPickerComponent {
     constructor(workspace) {
         this.workspace = workspace;
     }
@@ -19,7 +19,7 @@ class AssessmentPickerComponent {
         this.table.refresh();
     }
 
-    getWebixUI() {
+    getWebixConfig() {
         let tableToolbar = {
             id: "assessmentTableToolbar",
             view: "toolbar",

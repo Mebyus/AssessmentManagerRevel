@@ -14,7 +14,6 @@ class AppWorkspace {
         this.candidatesWorkspace.init();
         this.assessmentsWorkspace.init();
         this.employeesWorkspace.init();
-        
         console.log("app workspace loaded.");
     }
 
@@ -39,7 +38,7 @@ class AppWorkspace {
                     header:"Employees",
                     body: employeesWorkspaceUI,
                 },
-            ]
+            ],
         };
 
         return appUI;

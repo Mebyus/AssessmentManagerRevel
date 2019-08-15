@@ -10,6 +10,10 @@ type Employee struct {
 	AssessmentList		[]*AssessmentEmployee
 }
 
+func (employee *Employee) HasAssessments() (bool) {
+	return len(employee.AssessmentList) != 0
+}
+
 // Employee.SetNewId метод задает новое значение id сотрудника как в самом объекте,
 // так и в списке связей с собеседованиями AssessmentList
 func (employee *Employee) SetNewId(id int64) {

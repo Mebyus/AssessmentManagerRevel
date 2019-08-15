@@ -1,4 +1,8 @@
-class AssessmentsWorkspaceComponent {
+import {AssessmentPickerComponent} from "./picker.js";
+import {AssessmentViewerComponent} from "./viewer.js";
+import {AssessmentRequester} from "./../../models/assessments/provider.js"
+
+export class AssessmentWorkspaceComponent {
     constructor(url) {
         this.picker = new AssessmentPickerComponent(this);
         this.viewer = new AssessmentViewerComponent(this);
@@ -66,9 +70,9 @@ class AssessmentsWorkspaceComponent {
         }
     }
 
-    getWebixUI() {
-        let pickerUI = this.picker.getWebixUI();
-        let viewerUI = this.viewer.getWebixUI();
+    getWebixConfig() {
+        let pickerUI = this.picker.getWebixConfig();
+        let viewerUI = this.viewer.getWebixConfig();
 
         let assessmentsWorkspaceUI = {
             id:"assessmentssWorkspace",

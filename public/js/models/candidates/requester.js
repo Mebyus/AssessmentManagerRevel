@@ -1,4 +1,4 @@
-class CandidateRequester {
+export class CandidateRequester {
     constructor(url) {
         this.url = url;
     }

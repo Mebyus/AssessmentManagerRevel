@@ -1,4 +1,9 @@
-class EmployeesWorkspaceComponent {
+import {EmployeeAssessmentSelectorComponent as Emp} from "./assessmentselector.js";
+import {EmployeePickerComponent} from "./picker.js";
+import {EmployeeViewerComponent} from "./viewer.js";
+import {EmployeeRequester} from "./../../models/employees/requester.js";
+
+export class EmployeeWorkspaceComponent {
     constructor(url) {
         this.picker = new EmployeePickerComponent(this);
         this.viewer = new EmployeeViewerComponent(this);
@@ -9,10 +14,17 @@ class EmployeesWorkspaceComponent {
     init() {
         this.picker.init();
         this.viewer.init();
+        this.ui = $$("employeesWorkspace");
+        this.ui.attachEvent("onViewShow", getEmployeesWorkspaceShowHandler(this));    
         this.changeViewerMode("view");
         this.updateList();
 
         console.log("employees workspace loaded.");
+    }
+
+    update() {
+        this.updateList();
+        this.viewEmployee(this.currentEmployeeId);
     }
 
     updateList() {
@@ -21,7 +33,9 @@ class EmployeesWorkspaceComponent {
 
     viewEmployee(id) {
         this.currentEmployeeId = id;
-        this.model.get(id, employee => this.viewer.view.call(this.viewer, employee));
+        if (id) {
+            this.model.get(id, employee => this.viewer.view.call(this.viewer, employee));
+        }
     }
 
     clearViewer() {
@@ -57,18 +71,14 @@ class EmployeesWorkspaceComponent {
                 this.viewer.activateCreateMode();
                 break;
 
-            // case "edit":
-            //     this.viewer.activateEditMode();
-            //     break;
-
             default:
                 throw "Employee Viewer doesn't have this mode: " + mode;
         }
     }
 
-    getWebixUI() {
-        let pickerUI = this.picker.getWebixUI();
-        let viewerUI = this.viewer.getWebixUI();
+    getWebixConfig() {
+        let pickerUI = this.picker.getWebixConfig();
+        let viewerUI = this.viewer.getWebixConfig();
 
         let employeesWorkspace = {
             id:"employeesWorkspace",
@@ -80,4 +90,12 @@ class EmployeesWorkspaceComponent {
 
         return employeesWorkspace;
     }
+}
+
+function getEmployeesWorkspaceShowHandler(workspace) {
+    let handler = function() {
+        workspace.update();
+    }
+
+    return handler;
 }

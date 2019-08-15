@@ -136,12 +136,14 @@ func (mapper *EmployeeMapper) Create(employee *structures.Employee) (*structures
 // EmployeeMapper.CreateEmployeeAssessment вспомогательный метод запросов PUT и POST,
 // предназначен для создания связей сотрудника и собеседований.
 func (mapper *EmployeeMapper) CreateEmployeeAssessment(employeeId string, employee *structures.Employee) (error) {
-	query := "INSERT INTO assessment_employee(assessment, employee) VALUES " +
-		employee.AssessmentListStr() +
-		" ON CONFLICT DO NOTHING;"
-	_, err := mapper.connection.Exec(query)
-	if err != nil {
-		return fmt.Errorf("Добавление собеседований сотрудника %s в БД:\n", employeeId, err)
+	if employee.HasAssessments() {
+		query := "INSERT INTO assessment_employee(assessment, employee) VALUES " +
+			employee.AssessmentListStr() +
+			" ON CONFLICT DO NOTHING;"
+		_, err := mapper.connection.Exec(query)
+		if err != nil {
+			return fmt.Errorf("Добавление собеседований сотрудника %s в БД:\n", employeeId, err)
+		}
 	}
 	return nil
 }

@@ -1,4 +1,4 @@
-class EmployeeRequester {
+export class EmployeeRequester {
     constructor(url) {
         this.url = url;
     }

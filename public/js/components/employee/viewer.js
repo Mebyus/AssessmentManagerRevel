@@ -1,4 +1,4 @@
-class EmployeeViewerComponent {
+export class EmployeeViewerComponent {
     constructor(workspace) {
         this.workspace = workspace;
         this.mode = "view";
@@ -56,7 +56,7 @@ class EmployeeViewerComponent {
         return this.personalForm.getValues();
     }
 
-    getWebixUI() {
+    getWebixConfig() {
         let toolbarUI = {
             id: "employeeViewerToolbar",
             view: "toolbar",
