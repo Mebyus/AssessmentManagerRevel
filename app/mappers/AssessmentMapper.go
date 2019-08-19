@@ -84,8 +84,11 @@ func (mapper *AssessmentMapper) GetById(id string) (*structures.Assessment, erro
 	}
 
 	// Запрашиваем информацию о кандидатах, назначенных на собеседование
-	query = "SELECT id, assessment, candidate, is_confirmed, result, comment " +
-			"FROM candidate_for_assessment WHERE assessment = $1"
+	query = "SELECT a.assessment, a.candidate, a.is_confirmed, a.result, a.comment, b.last_name, b.first_name " +
+		"FROM (SELECT * FROM candidate_for_assessment WHERE assessment = $1) as a " +
+		"LEFT JOIN candidate as b ON a.candidate = b.id;"
+
+
 	candidateRows, err := mapper.connection.Query(query, id)
 	if err != nil {
 		return nil, err
@@ -93,8 +96,8 @@ func (mapper *AssessmentMapper) GetById(id string) (*structures.Assessment, erro
 	for candidateRows.Next() {
 		isConfirmed := sql.NullBool{}
 		candidate := structures.CandidateForAssessment{}
-		err = candidateRows.Scan(&candidate.Id, &candidate.AssessmentId, &candidate.CandidateId, &isConfirmed,
-				&candidate.Result, &candidate.Comment)
+		err = candidateRows.Scan(&candidate.AssessmentId, &candidate.CandidateId, &isConfirmed,
+				&candidate.Result, &candidate.Comment, &candidate.LastName, &candidate.FirstName)
 
 		if isConfirmed.Valid {
 			candidate.IsConfirmed = fmt.Sprintf("%t", isConfirmed.Bool)
@@ -115,15 +118,16 @@ func (mapper *AssessmentMapper) GetById(id string) (*structures.Assessment, erro
 	}
 
 	// Запрашиваем информацию о сотрудниках, назначенных на собеседование
-	query = "SELECT id, assessment, employee " +
-		"FROM assessment_employee WHERE assessment = $1"
+	query = "SELECT a.assessment, a.employee, b.last_name, b.first_name " +
+		"FROM (SELECT * FROM assessment_employee WHERE assessment = $1) as a " +
+		"LEFT JOIN employee as b ON a.employee = b.id;"
 	employeeRows, err := mapper.connection.Query(query, id)
 	if err != nil {
 		return nil, err
 	}
 	for employeeRows.Next() {
 		employee := structures.AssessmentEmployee{}
-		err = employeeRows.Scan(&employee.Id, &employee.AssessmentId, &employee.EmployeeId)
+		err = employeeRows.Scan(&employee.AssessmentId, &employee.EmployeeId, &employee.LastName, &employee.FirstName)
 
 		if err != nil {
 			defer func() {
@@ -177,12 +181,14 @@ func (mapper *AssessmentMapper) Create(assessment *structures.Assessment) (*stru
 // AssessmentMapper.AlterAssessmentEmployee вспомогательный метод запросов PUT и POST,
 // предназначен для создания связей собеседования и сотрудников.
 func (mapper *AssessmentMapper) CreateAssessmentEmployee(assessmentId string, assessment *structures.Assessment) (error) {
-	query := "INSERT INTO assessment_employee(assessment, employee) VALUES " +
-		assessment.EmployeeListStr() +
-		" ON CONFLICT DO NOTHING;"
-	_, err := mapper.connection.Exec(query)
-	if err != nil {
-		return fmt.Errorf("Добавление сотрудников на собеседование %s в БД:\n", assessmentId, err)
+	if assessment.HasEmployees() {
+		query := "INSERT INTO assessment_employee(assessment, employee) VALUES " +
+			assessment.EmployeeListStr() +
+			" ON CONFLICT DO NOTHING;"
+		_, err := mapper.connection.Exec(query)
+		if err != nil {
+			return fmt.Errorf("Добавление сотрудников на собеседование %s в БД:\n", assessmentId, err)
+		}
 	}
 	return nil
 }
@@ -190,12 +196,14 @@ func (mapper *AssessmentMapper) CreateAssessmentEmployee(assessmentId string, as
 // AssessmentMapper.AlterAssessmentCandidate вспомогательный метод запросов PUT и POST,
 // предназначен для создания связей собеседования и кандидатов.
 func (mapper *AssessmentMapper) CreateAssessmentCandidate(assessmentId string, assessment *structures.Assessment) (error) {
-	query := "INSERT INTO candidate_for_assessment(assessment, candidate, is_confirmed, result, comment) VALUES " +
-		assessment.CandidateListStr() +
-		" ON CONFLICT DO NOTHING;"
-	_, err := mapper.connection.Exec(query)
-	if err != nil {
-		return fmt.Errorf("Добавление кандидатов на собеседование %s в БД:", assessmentId, err)
+	if assessment.HasCandidates() {
+		query := "INSERT INTO candidate_for_assessment(assessment, candidate, is_confirmed, result, comment) VALUES " +
+			assessment.CandidateListStr() +
+			" ON CONFLICT DO NOTHING;"
+		_, err := mapper.connection.Exec(query)
+		if err != nil {
+			return fmt.Errorf("Добавление кандидатов на собеседование %s в БД:", assessmentId, err)
+		}
 	}
 	return nil
 }

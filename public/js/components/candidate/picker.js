@@ -1,7 +1,7 @@
 export class CandidatePickerComponent {
     constructor(workspace) {
         this.workspace = workspace;
-        this.scrollState = null;
+        this.scrollState = {x: 0, y: 0};
         this.mode = "view";
         this.newId = "";
     }
@@ -15,8 +15,6 @@ export class CandidatePickerComponent {
 
         this.listInput = $$("candidateListInput");
         this.listInput.attachEvent("onTimedKeyPress", getCandidateListInputHandler(this));
-        
-        console.log("candidate picker loaded.");
     }
 
     activateNewMode() {
@@ -50,8 +48,10 @@ export class CandidatePickerComponent {
             id: "candidateListToolbar",
             view: "toolbar",
             elements: [
-                {id: "newCandidateButton", view:"button", value: "New", gravity: 1},
-                {id: "candidateListInput", view:"text", css:"fltr", gravity: 2}
+                {id: "newCandidateButton", view:"button", type:"icon", icon:"wxi-plus", autowidth:true},
+                {id: "CandidateFindButton", view:"button", type:"iconButton", 
+                    icon:"wxi-search", autowidth: true},
+                {id: "candidateListInput", view:"text", css:"fltr", gravity: 2},
             ]
         }
         
@@ -59,8 +59,8 @@ export class CandidatePickerComponent {
             id: "candidateTable",
             view: "datatable",
             columns: [
-                {id:"lastName", header:"Name", fillspace:true},
-                {id:"phone", header:"Phone", fillspace:true},
+                {id:"lastName", header:"Фамилия", fillspace:true},
+                {id:"phone", header:"Телефон", fillspace:true},
                 {id:"email", header:"Email", fillspace:true},
             ],
             select: true,
@@ -90,10 +90,10 @@ export class CandidatePickerComponent {
  */
 function getCandidateSelectChangeHandler(workspace) {
     let handler = function () {
-        workspace.changeViewerMode("view");
         let item = workspace.picker.table.getSelectedItem();
         if (item) {
             if (item.id !== workspace.picker.newId) {
+                workspace.changeViewerMode("view");
                 if (workspace.picker.table.exists(workspace.picker.newId)) {
                     workspace.picker.table.remove(workspace.picker.newId);
                 }
@@ -109,7 +109,11 @@ function getCandidateListInputHandler(workspace) {
     let handler = function() {
         let value = workspace.listInput.getValue().toLowerCase();
         workspace.table.filter(function(item) {
-            return item.lastName.toLowerCase().indexOf(value) !== -1;
+            if (item.id !== workspace.newId) {
+                return item.lastName.toLowerCase().indexOf(value) !== -1;            
+            } else {
+                return true;
+            }
         });
     }
     return handler;

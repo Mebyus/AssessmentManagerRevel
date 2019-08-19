@@ -7,7 +7,7 @@ type Employee struct {
 	FirstName			string						`json:"firstName" sql:"first_name" sql_ins:"first_name"`
 	MiddleName			string						`json:"middleName" sql:"middle_name" sql_ins:"middle_name"`
 	LastName			string						`json:"lastName" sql:"last_name" sql_ins:"last_name"`
-	AssessmentList		[]*AssessmentEmployee
+	AssessmentList		[]*AssessmentEmployee		`json:"assessmentList"`
 }
 
 func (employee *Employee) HasAssessments() (bool) {

@@ -1,4 +1,3 @@
-import {EmployeeAssessmentSelectorComponent as Emp} from "./assessmentselector.js";
 import {EmployeePickerComponent} from "./picker.js";
 import {EmployeeViewerComponent} from "./viewer.js";
 import {EmployeeRequester} from "./../../models/employees/requester.js";
@@ -6,7 +5,7 @@ import {EmployeeRequester} from "./../../models/employees/requester.js";
 export class EmployeeWorkspaceComponent {
     constructor(url) {
         this.picker = new EmployeePickerComponent(this);
-        this.viewer = new EmployeeViewerComponent(this);
+        this.viewer = new EmployeeViewerComponent(this, url);
         this.model = new EmployeeRequester(url);
         this.currentEmployeeId = null;
     }
@@ -18,8 +17,6 @@ export class EmployeeWorkspaceComponent {
         this.ui.attachEvent("onViewShow", getEmployeesWorkspaceShowHandler(this));    
         this.changeViewerMode("view");
         this.updateList();
-
-        console.log("employees workspace loaded.");
     }
 
     update() {
@@ -33,8 +30,10 @@ export class EmployeeWorkspaceComponent {
 
     viewEmployee(id) {
         this.currentEmployeeId = id;
+        this.viewer.selector.currentEmployeeId = id;
         if (id) {
             this.model.get(id, employee => this.viewer.view.call(this.viewer, employee));
+            this.viewer.model.getAll(assessments => this.viewer.selector.setOptions(assessments));
         }
     }
 
@@ -43,20 +42,34 @@ export class EmployeeWorkspaceComponent {
     }
 
     deleteCurrentEmployee() {
-        this.model.delete(this.currentEmployeeId, () => function() {
+        this.model.delete(this.currentEmployeeId, () => {
             this.clearViewer();
             this.updateList();
-        }.call(this));   
+            webix.message({
+                text: "Сотрудник удален",
+                type: "success",
+                expire: 2000,
+            });
+        });   
     }
 
     createFromViewerData() {
         let input = this.viewer.getInputData();
+        input.assessmentList = this.viewer.selector.getInputData();
         this.model.add(input, () => this.updateList());
     }
 
     updateFromViewerData() {
         let input = this.viewer.getInputData();
-        this.model.update(this.currentEmployeeId, input, () => this.updateList());
+        input.assessmentList = this.viewer.selector.getInputData();
+        this.model.update(this.currentEmployeeId, input, () => {
+            this.updateList();
+            webix.message({
+                text: "Данные успешно обновлены",
+                type: "success",
+                expire: 2000,
+            });
+        });
     }
 
     changeViewerMode(mode) {

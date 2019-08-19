@@ -77,15 +77,16 @@ func (mapper *EmployeeMapper) GetById(id string) (*structures.Employee, error) {
 	}
 
 	// Запрашиваем информацию о собеседованиях, в которых принимает участие сотрудник
-	query = "SELECT id, assessment, employee  " +
-		"FROM assessment_employee WHERE employee = $1"
+	query = "SELECT a.assessment, b.date_time, a.employee " +
+		"FROM (SELECT * FROM assessment_employee WHERE employee = $1) as a " +
+		"LEFT JOIN assessment as b ON a.assessment = b.id;"
 	assessmentRows, err := mapper.connection.Query(query, id)
 	if err != nil {
 		return nil, err
 	}
 	for assessmentRows.Next() {
 		assessment := structures.AssessmentEmployee{}
-		err = assessmentRows.Scan(&assessment.Id, &assessment.AssessmentId,
+		err = assessmentRows.Scan(&assessment.AssessmentId, &assessment.DateTime,
 			&assessment.EmployeeId)
 
 		if err != nil {

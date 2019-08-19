@@ -11,6 +11,14 @@ type Assessment struct {
 	CandidateList		[]*CandidateForAssessment		`json:"candidateList"`
 }
 
+func (assessment *Assessment) HasEmployees() (bool) {
+	return len(assessment.EmployeeList) != 0
+}
+
+func (assessment *Assessment) HasCandidates() (bool) {
+	return len(assessment.CandidateList) != 0
+}
+
 // Assessment.SetNewId метод задает новое значение id собеседования как в самом объекте,
 // так и в списках связей с сотрудниками AssessmentList и кандидатами CandidateList
 func (assessment *Assessment) SetNewId(id int64) {

@@ -1,32 +1,26 @@
-export class EmployeeAssessmentSelectorComponent {
+export class AssessmentSelectorComponent {
     constructor(workspace) {
         this.workspace = workspace;
-        this.currentEmployeeId = -1;
-        this.selectedId = -1;
-        this.newId = -1;
+        this.currentEmployeeId = "";
+        this.selectedId = "";
+        this.newId = "";
         this.mode = "empty";
     }
 
     init() {
-        this.richselect = $$("candidateAssessmentSelect");
-        this.list = $$("candidateAssessmentList");
+        this.list = $$("EmployeeAssessmentList");
         this.list.attachEvent("onSelectChange", getListSelectChangeHandler(this));
-        this.richselect.attachEvent("onChange", getRichselectChangeHandler(this));
 
-        this.deleteButton = $$("candidateAssessmentDelete");
-        this.deleteButton.attachEvent("onItemClick", getCandidateAssessmentDeleteHandler(this));
+        this.richselect = $$("EmployeeAssessmentSelect");
+        this.richselect.attachEvent("onChange", getRichSelectChangeHandler(this));
 
-        this.newButton = $$("candidateAssessmentNew");
-        this.newButton.attachEvent("onItemClick", getCandidateAssessmentNewHandler(this));
+        this.deleteButton = $$("EmployeeAssessmentDelete");
+        this.deleteButton.attachEvent("onItemClick", getDeleteHandler(this));
 
-        this.datepicker = $$("candidateAssessmentDatepicker");
-        this.datepicker.hide();
-        
-        this.switch = $$("candidateAssessmentSwitch");
-        this.switch.attachEvent("onChange", getCandidateAssessmentSwitchHandler(this));
+        this.newButton = $$("EmployeeAssessmentNew");
+        this.newButton.attachEvent("onItemClick", getNewHandler(this));
 
         this.activateEmptyMode();
-        console.log("assessment selector loaded.");
     }
 
     clear() {
@@ -76,16 +70,16 @@ export class EmployeeAssessmentSelectorComponent {
     }
 
     getWebixConfig() {
-        let assessmentListConfig = { rows: [
+        let employeeListConfig = { rows: [
             {
                 view: "toolbar",
                 elements: [
-                    {id: "employeeAssessmentNew", view: "button", value: "Добавить"},
-                    {id: "employeeAssessmentDelete", view: "button", value: "Убрать"},
+                    {id: "EmployeeAssessmentNew", view: "button", value: "Добавить"},
+                    {id: "EmployeeAssessmentDelete", view: "button", value: "Убрать"},
                 ]
             },
             {
-                id: "employeeAssessmentList",
+                id: "EmployeeAssessmentList",
                 view: "list",
                 gravity: 1,
                 template: "#dateTime#",
@@ -95,58 +89,28 @@ export class EmployeeAssessmentSelectorComponent {
         ]
         };
 
-        let assessmentEditorConfig = { rows: [
+        let employeeEditorConfig = { rows: [
                 {
-                    id: "employeeAssessmentSelect",
+                    id: "EmployeeAssessmentSelect",
                     view: "richselect",
                     placeholder: "Выберите собеседование",
                     gravity: 1,
                     options: [],
-                },
-                {
-                    id: "employeeAssessmentSwitch",
-                    view: "switch",
-                    value: 0,
-                    label: "Создать",
-                    labelPosition: "top",
-                },
-                {
-                    id: "employeeAssessmentDatepicker",
-                    view: "datepicker",
-                    value: new Date(),
-                    label: "Дата и время",
-                    labelPosition: "top",
-                    timepicker: true,
                 },
                 {},
             ]
         };
 
         let selectorConfig = {
+            minHeight: 250,
             cols: [
-                assessmentEditorConfig,
-                assessmentListConfig,
+                employeeEditorConfig,
+                employeeListConfig,
             ]
         };
 
         return selectorConfig;
     }
-}
-
-function getEmployeeAssessmentSwitchHandler(workspace) {
-    let handler = function(newValue) {
-        if (newValue === 1) {
-            workspace.switch.define("label", "Выбрать");
-            workspace.switch.refresh();
-            workspace.datepicker.show();
-        } else {
-            workspace.switch.define("label", "Создать");
-            workspace.switch.refresh();
-            workspace.datepicker.hide();
-        }
-    }
-
-    return handler;
 }
 
 function getListSelectChangeHandler(workspace) {
@@ -164,7 +128,7 @@ function getListSelectChangeHandler(workspace) {
     return handler;
 }
 
-function getCandidateAssessmentDeleteHandler(workspace) {
+function getDeleteHandler(workspace) {
     let handler = function() {
         let id = workspace.list.getSelectedId();
         workspace.list.moveSelection("up");
@@ -177,31 +141,32 @@ function getCandidateAssessmentDeleteHandler(workspace) {
     return handler;
 }
 
-function getCandidateAssessmentNewHandler(workspace) {
+function getNewHandler(workspace) {
     let handler = function() {
         workspace.activateNewMode();
         workspace.newId = workspace.list.add({dateTime:"Выберите дату..."});
         workspace.list.select(workspace.newId);
-        workspace.selectedId = "0";
-        workspace.richselect.setValue(0);
+        workspace.selectedId = "";
+        workspace.richselect.setValue("");
     }
 
     return handler;
 }
 
-function getRichselectChangeHandler(workspace) {
+function getRichSelectChangeHandler(workspace) {
     let handler = function(newValue, oldValue) {
         if (newValue !== workspace.selectedId) {
             let item = workspace.list.getSelectedItem();
-            let assessment = workspace.data.find(value => value.id === newValue);
-            item.dateTime = assessment.dateTime;
-            item.assessmentId = parseInt(assessment.id);
-            item.candidateId = parseInt(workspace.currentCandidateId);
-            item.isConfirmed = "null";
-            workspace.list.refresh();
-            if (workspace.mode === "new") {
-                workspace.activateEditMode();
-                workspace.newId = "";
+            if (item) {
+                let assessment = workspace.data.find(value => value.id === newValue);
+                item.dateTime = assessment.dateTime;
+                item.assessmentId = parseInt(assessment.id);
+                item.employeeId = parseInt(workspace.currentEmployeeId);
+                workspace.list.refresh();
+                if (workspace.mode === "new") {
+                    workspace.activateEditMode();
+                    workspace.newId = "";
+                }
             }
         }
     }

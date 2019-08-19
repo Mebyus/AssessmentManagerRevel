@@ -1,197 +1,234 @@
-class SelectBox {
-    constructor(data, createDataUI, parentViewId) {
-        this.data = data;
-        this.createDataUI = createDataUI;
-        this.parentViewId = parentViewId;
-        this.selectedData = [];
-        this.availableData = Array.from(data);
-    }
-
-    select(id) {
-        let item = this.data.find(value => value.id === id);
-        if (item) {
-            this.selectedData.push(item);
-            this.availableData.splice(this.availableData.indexOf(item), 1);
-        }
-    }
-
-    unselect(id) {
-        let item = this.data.find(value => value.id === id);
-        if (item) {
-            let nextItemIndex = this.availableData.length;
-            for (let i = 0; i < this.availableData.length; i++) {
-                if (this.availableData[i].id > id) {
-                    nextItemIndex = i;
-                    break;
-                }
-            }
-            this.availableData.splice(nextItemIndex, 0, item);
-            this.selectedData.splice(this.selectedData.indexOf(item), 1);
-        }
-    }
-
-    getHeader() {
-        let header = {
-            view: "richselect", 
-            options: this.availableData,
-            on: {
-                "onChange": (newValue, oldValue) => {
-                    handleSelectChange.call(this, newValue, oldValue);
-                },
-            },
-        }
-
-        return header;
-    }
-}
+import {SelectBoxComponent, getEmployeeCardConfig, getCandidateCardConfig} from "./selectbox.js";
+import {EmployeeRequester} from "./../../models/employees/requester.js";
+import {CandidateRequester} from "./../../models/candidates/requester.js";
 
 export class AssessmentViewerComponent {
-    constructor(workspace) {
+    constructor(workspace, url) {
         this.workspace = workspace;
+        this.employeeBox = new SelectBoxComponent(this, [], "EmployeeSelectBox", 
+                "EmployeeBoxScroll", getEmployeeCardConfig);
+        this.employeeBox.model = new EmployeeRequester(url);
+        this.candidateBox = new SelectBoxComponent(this, [], "CandidateSelectBox", 
+                "CandidateBoxScroll", getCandidateCardConfig, true, getCandidateCardClickHandler);
+        this.candidateBox.model = new CandidateRequester(url);
+        this.currentAssessmentId = "";
+        this.currentCandidateId = "";
     }
 
     init() {
+        this.employeeBox.init();
+        this.candidateBox.init();
+
         this.dateForm = $$("assessmentDateTimeForm");
+        this.resultForm = $$("CandidateResultForm");
+        this.resultForm.disable();
 
         this.confirmButton = $$("assessmentConfirmButton");
         this.confirmButton.attachEvent("onItemClick", getAssessmentConfirmClickHandler(this.workspace));
         
-        // this.editButton = $$("candidateEditButton");
-        // this.editButton.attachEvent("onItemClick", getCandidateEditClickHandler(this.workspace));
-        
         this.deleteButton = $$("assessmentDeleteButton");
         this.deleteButton.attachEvent("onItemClick", getAssessmentDeleteClickHandler(this.workspace));
-
-        console.log("assessment viewer loaded.");
     }
 
     view(assessment) {
+        this.currentAssessmentId = assessment.id;
+        this.currentCandidateId = "";
         this.dateForm.setValues({
-            date: new Date(assessment.date),
+            dateTime: new Date(assessment.dateTime),
+        });
+        this.resultForm.setValues({
+            isConfirmed: 0,
+            result: 0,
+            comment: "",
+        });
+        this.employeeBox.selectFrom(assessment.employeeList, element => element.employeeId, 
+            (employee, element) => {});
+        this.candidateBox.selectFrom(assessment.candidateList, element => element.candidateId, 
+            (candidate, element) => {
+                candidate.comment = element.comment;
+                candidate.result = element.result;
+                candidate.isConfirmed = element.isConfirmed;
+            });
+        this.resultForm.disable();
+    }
+
+    setEmployeeOptions(employees) {
+        employees.forEach(element => {
+            element.value = element.lastName + " " + element.firstName;
+        });
+        this.employeeBox.reset(employees);
+        this.employeeBox.refresh();
+    }
+
+    setCandidateOptions(candidates) {
+        candidates.forEach(element => {
+            element.value = element.lastName + " " + element.firstName;
+        });
+        this.candidateBox.reset(candidates);
+        this.candidateBox.refresh();
+    }
+
+    setCandidateResult(candidate) {
+        this.resultForm.setValues({
+            isConfirmed: 0,
+            result: candidate.result,
+            comment: candidate.comment,
         });
     }
 
     activateViewMode() {
-        // this.confirmButton.disable();
         this.deleteButton.enable();
-        // this.editButton.enable();
-        // this.personalForm.disable();
     }
 
     activateCreateMode() {
-        // this.confirmButton.enable();
         this.deleteButton.disable();
-        // this.editButton.disable();
-        // this.personalForm.enable();
     }
 
     clear() {
         this.dateForm.clear();
+        this.dateForm.setValues({
+            dateTime: new Date(),
+        });
+        this.resultForm.disable();
     }
 
     getInputData() {
-        return this.dateForm.getValues();
+        let input = this.dateForm.getValues();
+
+        let resultInput = this.resultForm.getValues();
+        if (this.candidateBox.selectedItem) {
+            this.candidateBox.selectedItem.result = parseInt(resultInput.result);
+            this.candidateBox.selectedItem.comment = resultInput.comment;
+        }
+
+        input.employeeList = this.employeeBox.getInputData();
+        for (let element of input.employeeList) {
+            element.employeeId = parseInt(element.id, 10);
+            element.assessmentId = parseInt(this.currentAssessmentId, 10);
+            delete element.id;
+        }
+
+        input.candidateList = this.candidateBox.getInputData();
+        for (let element of input.candidateList) {
+            element.candidateId = parseInt(element.id, 10);
+            element.assessmentId = parseInt(this.currentAssessmentId, 10);
+            delete element.id;
+        }
+        return input;
     }
 
     getWebixConfig() {
-        this.candidateSelector = new SelectBox([], getCandidateCard, "candidateSelector");
-
-        let candidateSelectorUI = {
-            id:"candidateSelector",
+        let employeeSelectBoxConfig = {
+            id: "EmployeeSelectBox",
             borderless:false,
             rows: [
-                this.candidateSelector.getHeader(),
+                {view:"label", label: "Сотрудники", align: "center"},
                 {
+                    id:"EmployeeBoxScroll",
                     view:"scrollview",
                     scroll:"y",
                     body:{
-                        rows:[
-                            
-                        ]
+                        id:"EmployeeBoxScrollBody",
+                        rows:[],
                     },
                 },
             ],
-        }
+        };
 
-        this.employeeSelector = new SelectBox(testEmployeeSelectionOptions, getEmployeeCard, "employeesSelector");
-
-        let employeesSelectorUI = {
-            id: "employeesSelector",
+        let candidateSelectBoxConfig = {
+            id:"CandidateSelectBox",
             borderless:false,
             rows: [
-                this.employeeSelector.getHeader(),
+                {view:"label", label: "Кандидаты", align: "center"},
                 {
-                    id:"employeeSelectorScroll",
+                    id: "CandidateBoxScroll",
                     view:"scrollview",
                     scroll:"y",
                     body:{
-                        id:"employeeSelectorScrollBody",
-                        rows:[
-                            
-                        ]
+                        id: "EmployeeBoxScrollBody",
+                        rows:[],
                     },
                 },
             ],
-        }
+        };
 
         let toolbarUI = {
             id: "assessmentsViewerToolbar",
             view: "toolbar",
             elements: [
-                {view:"label", label:"Assessment info", align:"center"},
-                {id: "assessmentConfirmButton", view:"button", value:"Confirm"},
-                // {view:"button", value:"Edit"},
-                {id: "assessmentDeleteButton", view:"button", value:"Delete"},
+                {view:"label", label:"Информация о собеседовании", align:"center"},
+                {id: "assessmentConfirmButton", view:"button", value:"Подтвердить"},
+                {id: "assessmentDeleteButton", view:"button", value:"Удалить"},
             ],
         }
 
         let dateTimeFormUI = {
             id: "assessmentDateTimeForm",
             view: "form",
-            rows:[
-                {name: "date", view:"datepicker", timepicker:true, label: "Date", labelPosition: "top"},
-                {view:"text", label: "Time", labelPosition: "top"},
+            cols:[
+                {
+                    name: "dateTime", 
+                    gravity: 1,
+                    view:"datepicker", 
+                    timepicker:true, 
+                    label: "Дата и время собеседования", 
+                    labelPosition: "top",
+                    format: "%d.%m.%y -- %H:%i",
+                },
+                {
+                    gravity: 1,
+                },
             ],
         }
 
-        let dateTimeUI = {
-            // id: "assessmentsDateTimeForm",
-            rows: [
-                {view: "label", label: "Date & Time", align: "center"},
-                dateTimeFormUI,
-            ]
-        };
-
         let candidateResultUI = {
+            id: "CandidateResultForm",
             view:"form",
             cols: [
                 {
+                    name:"isConfirmed",
+                    view:"radio",
+                    label: "Явка",
+                    labelPosition: "top",
+                    gravity:1,
+                    vertical: true,
+                    value: 0,
+                    options: [
+                        {id: 0, value:"Неизвестно"},
+                        {id: 1, value:"Явился"},
+                        {id: 2, value:"Не явился"},
+                    ],
+                },
+                {
+                    name:"result",
+                    view:"radio",
+                    label: "Результат",
+                    labelPosition: "top",
+                    gravity:1,
+                    vertical: true,
+                    value: 0,
+                    options: [
+                        {id: 0, value:"Не завершено"},
+                        {id: 1, value:"Принять"},
+                        {id: 2, value:"Отказать"},
+                    ],
+                },
+                {
+                    name:"comment",
                     view:"textarea",
                     height:150,
                     gravity:3,
                 },
-                {
-                    view:"toolbar",
-                    gravity:1,
-                    rows: [
-                        {view:"button", value:"Accept"},
-                        {view:"button", value:"Reject"},
-                    ],
-                }
             ],
         };
 
         let scrollableViewverPartUI = {
             rows:[
+                    dateTimeFormUI,
                 {
                     cols:[
-                        {
-                            rows:[
-                                dateTimeUI,
-                                employeesSelectorUI,
-                            ]
-                        },
-                        candidateSelectorUI,
+                        candidateSelectBoxConfig,
+                        employeeSelectBoxConfig,
                     ]
                 },
                 // {},
@@ -216,6 +253,20 @@ export class AssessmentViewerComponent {
     }
 }
 
+function getCandidateCardClickHandler(boxComponent, cardId, item) {
+    let handler = function() {
+        let resultInput = boxComponent.workspace.resultForm.getValues();
+        if (boxComponent.selectedItem) {
+            boxComponent.selectedItem.result = parseInt(resultInput.result);
+            boxComponent.selectedItem.comment = resultInput.comment;
+        }
+        boxComponent.setSelection(cardId, item);
+        boxComponent.workspace.resultForm.enable();
+        boxComponent.workspace.setCandidateResult(item);
+    }
+    return handler;
+}
+
 function getAssessmentConfirmClickHandler(workspace) {
     let handler = function () {
         if (workspace.viewer.mode === "view") {
@@ -237,70 +288,4 @@ function getAssessmentDeleteClickHandler(workspace) {
         }
     }
     return handler;
-}
-
-let testEmployeeSelectionOptions = [
-    {id:1, value:"Rudolf"},
-    {id:2, value:"Jane"},
-    {id:3, value:"Quentin"},
-    {id:4, value:"Van-der Varden"},
-];
-
-function getCandidateCard(box, candidate) {
-    let card = {
-        view: "toolbar",
-        elements: [
-            {view: "button", value: "V", width:50},
-            {view: "button", value: "U", width:50},
-            {view: "button", value: "N", width:50},
-            {view: "label", label: candidate.name},
-            {
-                view: "button", value: "-", width:50, 
-                click: getUnselectClickHandler(box, candidate.id),
-            },
-        ]
-    }
-
-    return card
-}
-
-function getEmployeeCard(box, employee) {
-    let card = {
-        id:"card" + employee.id,
-        view: "toolbar",
-        elements: [
-            {view: "label", label: employee.value},
-            {
-                view: "button", value: "-", width:50, 
-                click: getUnselectClickHandler(box, employee.id),
-            },
-        ]
-    }
-    return card;
-}
-
-function getUnselectClickHandler(box, itemId) {
-    let handler = function (id, event) {
-        let card = $$(id).getParentView();
-        card.getParentView().removeView(card);
-        box.unselect(itemId);
-        let header = $$(box.parentViewId).getChildViews()[0];
-        header.define("options", box.availableData);
-    }
-    return handler;
-}
-
-function handleSelectChange(newValue, oldValue) {
-    if (newValue) {
-        console.log($$(this.parentViewId).getChildViews());
-        let header = $$(this.parentViewId).getChildViews()[0];
-        header.setValue(0);
-        let id = newValue;
-        let newCard = this.createDataUI(this, this.data.find(value => value.id === id));
-        let body = $$(this.parentViewId).getChildViews()[1].getBody();
-        console.log(body);
-        body.addView(newCard, 0);
-        this.select(id);
-        header.define("options", this.availableData);
-    }
 }

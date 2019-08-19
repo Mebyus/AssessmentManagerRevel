@@ -1,22 +1,24 @@
+import {AssessmentSelectorComponent} from "./assessmentselector.js";
+import {AssessmentRequester} from "../../models/assessments/requester.js";
+
 export class EmployeeViewerComponent {
-    constructor(workspace) {
+    constructor(workspace, url) {
         this.workspace = workspace;
+        this.selector = new AssessmentSelectorComponent(this);
+        this.model = new AssessmentRequester(url);
         this.mode = "view";
     }
 
     init() {
+        this.selector.init();
+
         this.personalForm = $$("employeePersonalInfoForm");
         
         this.confirmButton = $$("employeeConfirmButton");
         this.confirmButton.attachEvent("onItemClick", getEmployeeConfirmClickHandler(this.workspace));
         
-        // this.editButton = $$("employeeEditButton");
-        // this.editButton.attachEvent("onItemClick", getEmployeeEditClickHandler(this.workspace));
-        
         this.deleteButton = $$("employeeDeleteButton");
         this.deleteButton.attachEvent("onItemClick", getEmployeeDeleteClickHandler(this.workspace));
-        
-        console.log("employee viewer loaded.");
     }
 
     view(employee) {
@@ -25,31 +27,21 @@ export class EmployeeViewerComponent {
             middleName: employee.middleName,
             lastName: employee.lastName,
         });
+        this.selector.setList(employee.assessmentList);
+        this.selector.clear();
     }
 
     activateViewMode() {
-        // this.confirmButton.disable();
         this.deleteButton.enable();
-        // this.editButton.enable();
-        // this.personalForm.disable();
     }
 
     activateCreateMode() {
-        // this.confirmButton.enable();
         this.deleteButton.disable();
-        // this.editButton.disable();
-        // this.personalForm.enable();
     }
-
-    // activateEditMode() {
-    //     this.confirmButton.enable();
-    //     this.deleteButton.enable();
-    //     this.editButton.disable();
-    //     this.personalForm.enable();
-    // }
 
     clear() {
         this.personalForm.clear();
+        this.selector.clear();
     }
 
     getInputData() {
@@ -63,7 +55,6 @@ export class EmployeeViewerComponent {
             elements: [
                 {view:"label", label:"Employee info", align:"center"},
                 {id: "employeeConfirmButton", view:"button", value:"Confirm"},
-                // {id: "employeeEditButton", view:"button", value:"Edit"},
                 {id: "employeeDeleteButton", view:"button", value:"Delete"},
             ],
         }
@@ -83,36 +74,35 @@ export class EmployeeViewerComponent {
             ]}],
         }
 
-        let employeeCanlendar = {
-            view:"calendar",
-            id:"employeeCalendar",
-            date:new Date(),
-            weekHeader:true,
-            events:webix.Date.isHoliday,
-            width:300,
-            height:250
-        };
+        // let employeeCanlendar = {
+        //     view:"calendar",
+        //     id:"employeeCalendar",
+        //     date:new Date(),
+        //     weekHeader:true,
+        //     events:webix.Date.isHoliday,
+        //     width:300,
+        //     height:250
+        // };
 
-        let employeeCalendarToolbar = {
-            view:"toolbar",
-            id:"employeeCalendarToolbar",
-            rows: [
-                {view:"button", value:"Assign"},
-                {view:"button", value:"Dismiss"},
-            ]
-        }
+        // let employeeCalendarToolbar = {
+        //     view:"toolbar",
+        //     id:"employeeCalendarToolbar",
+        //     rows: [
+        //         {view:"button", value:"Assign"},
+        //         {view:"button", value:"Dismiss"},
+        //     ]
+        // }
 
         let scrollableViewverPartUI = {
             rows:[
                 personalInfoForm,
                 {},
                 {
-                    cols:[
-                        employeeCanlendar,
-                        employeeCalendarToolbar,
-                        {},
-                    ]
-                },
+                    rows:[
+                        {view: "label", label: "Assessment", align: "center"},
+                        this.selector.getWebixConfig(),
+                    ],
+                }
             ]
         }
 

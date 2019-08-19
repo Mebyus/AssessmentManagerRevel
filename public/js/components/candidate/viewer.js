@@ -1,5 +1,5 @@
 import {AssessmentSelectorComponent} from "./assessmentselector.js";
-import {AssessmentRequester} from "./../../models/assessments/provider.js";
+import {AssessmentRequester} from "./../../models/assessments/requester.js";
 
 export class CandidateViewerComponent {
     constructor(workspace, url) {
@@ -19,8 +19,6 @@ export class CandidateViewerComponent {
               
         this.deleteButton = $$("candidateDeleteButton");
         this.deleteButton.attachEvent("onItemClick", getCandidateDeleteClickHandler(this.workspace));
-        
-        console.log("candidate viewer loaded.");
     }
 
     view(candidate) {

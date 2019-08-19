@@ -13,6 +13,16 @@ type CandidateMapper struct {
 	Mapper
 }
 
+func (mapper *CandidateMapper) GetSearch(searchStr string) (*[]structures.Candidate, error) {
+	candidates := []structures.Candidate{}
+	columnString, _ := tagString("sql", structures.Candidate{})
+	query := "SELECT " + columnString +
+		" FROM candidate WHERE last_name ILIKE '$1%' OR " +
+		"first_name ILIKE '$2%' OR " +
+		"middle_name ILIKE '$3%';";
+	
+}
+
 // CandidateMapper.Get метод оформляет и передает запрос
 // GET /candidate на получение списка всех кандидатов в БД.
 func (mapper *CandidateMapper) Get() (*[]structures.Candidate, error) {

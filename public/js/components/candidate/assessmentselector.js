@@ -19,14 +19,13 @@ export class AssessmentSelectorComponent {
         this.newButton = $$("candidateAssessmentNew");
         this.newButton.attachEvent("onItemClick", getNewHandler(this));
 
-        this.datepicker = $$("candidateAssessmentDatepicker");
-        this.datepicker.hide();
+        // this.datepicker = $$("candidateAssessmentDatepicker");
+        // this.datepicker.hide();
         
-        this.switch = $$("candidateAssessmentSwitch");
-        this.switch.attachEvent("onChange", getCandidateAssessmentSwitchHandler(this));
+        // this.switch = $$("candidateAssessmentSwitch");
+        // this.switch.attachEvent("onChange", getCandidateAssessmentSwitchHandler(this));
 
         this.activateEmptyMode();
-        console.log("assessment selector loaded.");
     }
 
     clear() {
@@ -103,26 +102,27 @@ export class AssessmentSelectorComponent {
                     gravity: 1,
                     options: [],
                 },
-                {
-                    id: "candidateAssessmentSwitch",
-                    view: "switch",
-                    value: 0,
-                    label: "Создать",
-                    labelPosition: "top",
-                },
-                {
-                    id: "candidateAssessmentDatepicker",
-                    view: "datepicker",
-                    value: new Date(),
-                    label: "Дата и время",
-                    labelPosition: "top",
-                    timepicker: true,
-                },
+                // {
+                //     id: "candidateAssessmentSwitch",
+                //     view: "switch",
+                //     value: 0,
+                //     label: "Создать",
+                //     labelPosition: "top",
+                // },
+                // {
+                //     id: "candidateAssessmentDatepicker",
+                //     view: "datepicker",
+                //     value: new Date(),
+                //     label: "Дата и время",
+                //     labelPosition: "top",
+                //     timepicker: true,
+                // },
                 {},
             ]
         };
 
         let selectorConfig = {
+            minHeight: 250,
             cols: [
                 assessmentEditorConfig,
                 assessmentListConfig,
@@ -133,21 +133,21 @@ export class AssessmentSelectorComponent {
     }
 }
 
-function getCandidateAssessmentSwitchHandler(workspace) {
-    let handler = function(newValue) {
-        if (newValue === 1) {
-            workspace.switch.define("label", "Выбрать");
-            workspace.switch.refresh();
-            workspace.datepicker.show();
-        } else {
-            workspace.switch.define("label", "Создать");
-            workspace.switch.refresh();
-            workspace.datepicker.hide();
-        }
-    }
+// function getCandidateAssessmentSwitchHandler(workspace) {
+//     let handler = function(newValue) {
+//         if (newValue === 1) {
+//             workspace.switch.define("label", "Выбрать");
+//             workspace.switch.refresh();
+//             workspace.datepicker.show();
+//         } else {
+//             workspace.switch.define("label", "Создать");
+//             workspace.switch.refresh();
+//             workspace.datepicker.hide();
+//         }
+//     }
 
-    return handler;
-}
+//     return handler;
+// }
 
 function getListSelectChangeHandler(workspace) {
     let handler = function() {

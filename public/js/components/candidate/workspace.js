@@ -17,8 +17,6 @@ export class CandidateWorkspaceComponent {
         this.ui.attachEvent("onViewShow", getCandidateWorkspaceShowHandler(this));
         this.changeViewerMode("view");
         this.updateList();
-
-        console.log("candidates workspace loaded.");
     }
 
     update() {
@@ -70,7 +68,7 @@ export class CandidateWorkspaceComponent {
                 text: "Данные успешно обновлены",
                 type: "success",
                 expire: 2000,
-            })
+            });
         });
     }
 

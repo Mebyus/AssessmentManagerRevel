@@ -1,22 +1,27 @@
 import {AssessmentPickerComponent} from "./picker.js";
 import {AssessmentViewerComponent} from "./viewer.js";
-import {AssessmentRequester} from "./../../models/assessments/provider.js"
+import {AssessmentRequester} from "./../../models/assessments/requester.js"
 
 export class AssessmentWorkspaceComponent {
     constructor(url) {
         this.picker = new AssessmentPickerComponent(this);
-        this.viewer = new AssessmentViewerComponent(this);
+        this.viewer = new AssessmentViewerComponent(this, url);
         this.model = new AssessmentRequester(url);
-        this.currentAssessmentId = null;
+        this.currentAssessmentId = "";
     }
 
     init() {
         this.picker.init();
         this.viewer.init();
+        this.ui = $$("candidatesWorkspace");
+        this.ui.attachEvent("onViewShow", getAssessmentWorkspaceShowHandler(this));
         this.changeViewerMode("view");
         this.updateList();
-        
-        console.log("assessments workspace loaded.");
+    }
+
+    update() {
+        this.updateList();
+        this.viewAssessment(this.currentAssessmentId);
     }
 
     updateList() {
@@ -25,7 +30,29 @@ export class AssessmentWorkspaceComponent {
 
     viewAssessment(id) {
         this.currentAssessmentId = id;
-        this.model.get(id, assessment => this.viewer.view.call(this.viewer, assessment));
+        
+        if (id) {
+            let allCandidatePromise = this.model.getAllCandidatePromise(candidates => {
+                candidates.forEach(element => {
+                    element.comment = "";
+                    element.isConfirmed = "null";
+                    element.result = 0;
+                });
+                this.viewer.setCandidateOptions(candidates);
+            });
+
+            let allEmployeePromise = this.model.getAllEmployeePromise(employees => {
+                this.viewer.setEmployeeOptions(employees);
+            });
+
+            this.model.get(id, assessment => {
+                allCandidatePromise.then(canidateResult => {
+                    allEmployeePromise.then(employeeResult => {
+                        this.viewer.view.call(this.viewer, assessment);
+                    });
+                });
+            });
+        }
     }
 
     clearViewer() {
@@ -41,6 +68,7 @@ export class AssessmentWorkspaceComponent {
 
     createFromViewerData() {
         let input = this.viewer.getInputData();
+        console.log(input);
         this.model.add(input, () => this.updateList());
     }
 
@@ -59,11 +87,20 @@ export class AssessmentWorkspaceComponent {
             case "create":
                 this.clearViewer();
                 this.viewer.activateCreateMode();
-                break;
 
-            // case "edit":
-            //     this.viewer.activateEditMode();
-            //     break;
+                this.model.getAllCandidatePromise(candidates => {
+                    candidates.forEach(element => {
+                        element.comment = "";
+                        element.isConfirmed = "null";
+                        element.result = 0;
+                    });
+                    this.viewer.setCandidateOptions(candidates);
+                });
+        
+                this.model.getAllEmployeePromise(employees => {
+                    this.viewer.setEmployeeOptions(employees);
+                });
+                break;
 
             default:
                 throw "Assessment Viewer doesn't have this mode: " + mode;
@@ -84,4 +121,12 @@ export class AssessmentWorkspaceComponent {
 
         return assessmentsWorkspaceUI;
     }
+}
+
+function getAssessmentWorkspaceShowHandler(workspace) {
+    let handler = function() {
+        workspace.update();
+    }
+
+    return handler;
 }

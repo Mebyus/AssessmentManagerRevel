@@ -12,11 +12,11 @@ class AppWorkspace {
 
     init() {
         webix.Date.startOnMonday = true;
+        webix.i18n.setLocale("ru-RU");
         webix.ui(this.getWebixConfig());
         this.candidateWorkspace.init();
         this.assessmentWorkspace.init();
         this.employeeWorkspace.init();
-        console.log("app workspace loaded.");
     }
 
     getWebixConfig() {
@@ -29,15 +29,15 @@ class AppWorkspace {
             view:"tabview",
             cells:[     
                 {
-                    header: "Candidates",
+                    header: "Кандидаты",
                     body: candidateWorkspaceConfig,
                 },
                 { 
-                    header:"Assessments", 
+                    header:"Собеседования", 
                     body: assessmentWorkspaceConfig,
                 },
                 {
-                    header:"Employees",
+                    header:"Сотрудники",
                     body: employeeWorkspaceConfig,
                 },
             ],

@@ -62,17 +62,24 @@ class SelectBox {
 }
 
 export class SelectBoxComponent {
-    constructor(data, parentForHeaderId, parentForBodyId, getDataElementUI) {
+    constructor(workspace, data, parentForHeaderId, parentForBodyId, getDataElementUI, 
+        isSelectable = false, getCardClickHandler = null) {
+        this.workspace = workspace;
         this.data = data;
         this.box = new SelectBox(data);
         this.parentForHeaderId = parentForHeaderId;
         this.parentForBodyId = parentForBodyId;
         this.getDataElementUI = getDataElementUI;
+        this.isSelectable = isSelectable;
+        this.selectedId = "";
+        this.selectedItem = null;
+        this.getCardClickHandler = getCardClickHandler;
     }
 
     init() {
         let headerUIConfig = {
-            view: "richselect", 
+            view: "richselect",
+            placeholder: "Добавить...",
             options: this.box.available,
         };
 
@@ -86,11 +93,40 @@ export class SelectBoxComponent {
         this.header.attachEvent("onChange", getSelectChangeHandler(this));
     }
 
+    setSelection(cardId, item) {
+        if (cardId !== this.selectedId) {
+            this.selectedItem = null;
+            let oldCard = $$(this.selectedId);
+            let newCard = $$(cardId);
+            if (oldCard) {
+                oldCard.getNode().style.background = "white";
+            }
+            if (newCard) {
+                newCard.getNode().style.background = "#A2F5FC";
+                this.selectedItem = item;
+            }
+            this.selectedId = cardId;
+        }
+    }
+
+    addCard(item) {
+        let newCardConfig = this.getDataElementUI(this, item);
+        let newCardId = this.body.addView(newCardConfig, 0);
+        let newCard = $$(newCardId);
+
+        if (this.isSelectable) {
+            newCard.getNode().addEventListener('click', 
+                this.getCardClickHandler(this, newCardId, item));
+        }
+    }
+
     refresh() {
         this.header.define("options", this.box.available);
     }
 
     reset(data) {
+        this.selectedId = "";
+        this.selectedItem = null;
         this.data = data;
         this.box.reset(data);
         let childs = this.body.getChildViews();
@@ -103,13 +139,13 @@ export class SelectBoxComponent {
         return this.box.selected;
     }
 
-    selectFrom(data, itemId) {
+    selectFrom(data, itemId, transfer) {
         if (data) { 
             data.forEach(element => {
                 let item = this.box.selectId(itemId(element));
                 if (item) {
-                    let newCard = this.getDataElementUI(this, item);
-                    this.body.addView(newCard, 0);
+                    transfer(item, element);
+                    this.addCard(item);
                 }
             });
             this.refresh();
@@ -124,9 +160,7 @@ function getSelectChangeHandler(boxComponent) {
 
             let selectedId = newValue;
             let item = boxComponent.data.find(value => value.id === selectedId);
-            let newCard = boxComponent.getDataElementUI(boxComponent, item);
-
-            boxComponent.body.addView(newCard, 0);
+            boxComponent.addCard(item);
             boxComponent.box.select(item);
             boxComponent.header.define("options", boxComponent.box.available);
         }
@@ -147,10 +181,11 @@ function getUnselectClickHandler(boxComponent, item) {
 export function getEmployeeCardConfig(boxComponent, employee) {
     let card = {
         view: "toolbar",
+        borderless: false,
         elements: [
             {view: "label", label: employee.lastName + " " + employee.firstName},
             {
-                view: "button", value: "-", width:50, 
+                view: "button", type:"icon", icon:"wxi-close", autowidth:true, 
                 click: getUnselectClickHandler(boxComponent, employee),
             },
         ]
@@ -158,4 +193,16 @@ export function getEmployeeCardConfig(boxComponent, employee) {
     return card;
 }
 
-
+export function getCandidateCardConfig(boxComponent, candidate) {
+    let card = {
+        view: "toolbar",
+        elements: [
+            {view: "label", label: candidate.lastName + " " + candidate.firstName},
+            {
+                view: "button", type:"icon", icon:"wxi-close", autowidth:true, 
+                click: getUnselectClickHandler(boxComponent, candidate),
+            },
+        ]
+    }
+    return card;
+}

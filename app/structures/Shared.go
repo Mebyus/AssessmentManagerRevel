@@ -8,7 +8,10 @@ import (
 type AssessmentEmployee struct {
 	Id					int64		`json:"id"`
 	AssessmentId		int64		`json:"assessmentId"`
+	DateTime			string		`json:"dateTime"`
 	EmployeeId			int64		`json:"employeeId"`
+	LastName			string		`json:"lastName"`
+	FirstName			string		`json:"firstName"`
 }
 
 // Структура для хранения связи кандидат-собеседование и результатов кандидата
@@ -21,6 +24,8 @@ type CandidateForAssessment struct {
 	IsConfirmed			string		`json:"isConfirmed"`
 	Result				int			`json:"result"`
 	Comment				string		`json:"comment"`
+	LastName			string		`json:"lastName"`
+	FirstName			string		`json:"firstName"`
 }
 
 // CandidateForAssessment.StrRow метод возвращает представление связи кандидат-собеседование
