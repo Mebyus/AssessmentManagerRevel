@@ -19,17 +19,12 @@ export class AssessmentSelectorComponent {
         this.newButton = $$("candidateAssessmentNew");
         this.newButton.attachEvent("onItemClick", getNewHandler(this));
 
-        // this.datepicker = $$("candidateAssessmentDatepicker");
-        // this.datepicker.hide();
-        
-        // this.switch = $$("candidateAssessmentSwitch");
-        // this.switch.attachEvent("onChange", getCandidateAssessmentSwitchHandler(this));
-
         this.activateEmptyMode();
     }
 
     clear() {
         this.richselect.setValue("");
+        this.list.clearAll();
     }
 
     activateEmptyMode() {
@@ -72,6 +67,7 @@ export class AssessmentSelectorComponent {
             element.value = element.dateTime;
         });
         this.richselect.define("options", data);
+        this.richselect.setValue("");
     }
 
     getWebixConfig() {
@@ -102,21 +98,6 @@ export class AssessmentSelectorComponent {
                     gravity: 1,
                     options: [],
                 },
-                // {
-                //     id: "candidateAssessmentSwitch",
-                //     view: "switch",
-                //     value: 0,
-                //     label: "Создать",
-                //     labelPosition: "top",
-                // },
-                // {
-                //     id: "candidateAssessmentDatepicker",
-                //     view: "datepicker",
-                //     value: new Date(),
-                //     label: "Дата и время",
-                //     labelPosition: "top",
-                //     timepicker: true,
-                // },
                 {},
             ]
         };
@@ -132,22 +113,6 @@ export class AssessmentSelectorComponent {
         return selectorConfig;
     }
 }
-
-// function getCandidateAssessmentSwitchHandler(workspace) {
-//     let handler = function(newValue) {
-//         if (newValue === 1) {
-//             workspace.switch.define("label", "Выбрать");
-//             workspace.switch.refresh();
-//             workspace.datepicker.show();
-//         } else {
-//             workspace.switch.define("label", "Создать");
-//             workspace.switch.refresh();
-//             workspace.datepicker.hide();
-//         }
-//     }
-
-//     return handler;
-// }
 
 function getListSelectChangeHandler(workspace) {
     let handler = function() {
@@ -194,14 +159,16 @@ function getRichselectChangeHandler(workspace) {
         if (newValue !== workspace.selectedId) {
             let item = workspace.list.getSelectedItem();
             let assessment = workspace.data.find(value => value.id === newValue);
-            item.dateTime = assessment.dateTime;
-            item.assessmentId = parseInt(assessment.id);
-            item.candidateId = parseInt(workspace.currentCandidateId);
-            item.isConfirmed = "null";
-            workspace.list.refresh();
-            if (workspace.mode === "new") {
-                workspace.activateEditMode();
-                workspace.newId = "";
+            if (item && assessment) {
+                item.dateTime = assessment.dateTime;
+                item.assessmentId = parseInt(assessment.id);
+                item.candidateId = parseInt(workspace.currentCandidateId);
+                item.isConfirmed = "null";
+                workspace.list.refresh();
+                if (workspace.mode === "new") {
+                    workspace.activateEditMode();
+                    workspace.newId = "";
+                }
             }
         }
     }

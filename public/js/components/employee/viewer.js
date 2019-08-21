@@ -1,11 +1,9 @@
 import {AssessmentSelectorComponent} from "./assessmentselector.js";
-import {AssessmentRequester} from "../../models/assessments/requester.js";
 
 export class EmployeeViewerComponent {
-    constructor(workspace, url) {
+    constructor(workspace) {
         this.workspace = workspace;
         this.selector = new AssessmentSelectorComponent(this);
-        this.model = new AssessmentRequester(url);
         this.mode = "view";
     }
 
@@ -28,7 +26,6 @@ export class EmployeeViewerComponent {
             lastName: employee.lastName,
         });
         this.selector.setList(employee.assessmentList);
-        this.selector.clear();
     }
 
     activateViewMode() {

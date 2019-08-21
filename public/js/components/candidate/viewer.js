@@ -1,12 +1,10 @@
 import {AssessmentSelectorComponent} from "./assessmentselector.js";
-import {AssessmentRequester} from "./../../models/assessments/requester.js";
 
 export class CandidateViewerComponent {
-    constructor(workspace, url) {
+    constructor(workspace) {
         this.workspace = workspace;
         this.mode = "view";
         this.selector = new AssessmentSelectorComponent(this);
-        this.model = new AssessmentRequester(url);
     }
 
     init() {
@@ -31,7 +29,6 @@ export class CandidateViewerComponent {
             phone: candidate.phone,
         });
         this.selector.setList(candidate.assessmentList);
-        this.selector.clear();
     }
 
     activateViewMode() {
@@ -67,7 +64,6 @@ export class CandidateViewerComponent {
                             label: "Дата рождения",
                             labelPosition: "top", 
                             view:"datepicker", 
-                            value: new Date(), 
                         },                    
                     ]
                 },
@@ -104,9 +100,9 @@ export class CandidateViewerComponent {
                 {
                     view: "toolbar",
                     elements: [
+                        {id: "candidateConfirmButton", view:"button", type:"icon", icon:"wxi-check", autowidth:true},
+                        {id: "candidateDeleteButton", view:"button", type:"icon", icon:"wxi-trash", autowidth:true},
                         {view:"label", label:"Информация о кандидате", align:"center"},
-                        {id: "candidateConfirmButton", view:"button", value:"Confirm"},
-                        {id: "candidateDeleteButton", view:"button", value:"Delete"},
                     ] 
                 },
                 {

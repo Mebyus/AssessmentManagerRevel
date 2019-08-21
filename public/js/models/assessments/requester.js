@@ -1,13 +1,13 @@
+import {encodeQueryData} from "./../query.js";
+
 export class AssessmentRequester {
     constructor(url) {
         this.url = url;
     }
 
     search(dateRange, callAfterResponse) {
-        let url = new URL(this.url + "/assessment");
         let params = dateRange;
-
-        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+        let url = this.url + "/assessment" + "?" + encodeQueryData(params);
 
         fetch(url)
         .then(resp => resp.json())

@@ -5,7 +5,7 @@ import {EmployeeRequester} from "./../../models/employees/requester.js";
 export class EmployeeWorkspaceComponent {
     constructor(url) {
         this.picker = new EmployeePickerComponent(this);
-        this.viewer = new EmployeeViewerComponent(this, url);
+        this.viewer = new EmployeeViewerComponent(this);
         this.model = new EmployeeRequester(url);
         this.currentEmployeeId = null;
     }
@@ -37,7 +37,7 @@ export class EmployeeWorkspaceComponent {
         this.viewer.selector.currentEmployeeId = id;
         if (id) {
             this.model.get(id, employee => this.viewer.view.call(this.viewer, employee));
-            this.viewer.model.getAll(assessments => this.viewer.selector.setOptions(assessments));
+            this.model.getAllAssessmentPromise(assessments => this.viewer.selector.setOptions(assessments));
         }
     }
 
@@ -88,6 +88,8 @@ export class EmployeeWorkspaceComponent {
             case "create":
                 this.clearViewer();
                 this.viewer.activateCreateMode();
+
+                this.model.getAllAssessmentPromise(assessments => this.viewer.selector.setOptions(assessments));
                 break;
 
             default:

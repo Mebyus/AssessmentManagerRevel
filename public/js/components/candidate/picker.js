@@ -13,6 +13,9 @@ export class CandidatePickerComponent {
         this.newButton = $$("newCandidateButton");
         this.newButton.attachEvent("onItemClick", getNewCandidateClickHandler(this.workspace));
 
+        this.syncButton = $$("CandidateSyncButton");
+        this.syncButton.attachEvent("onItemClick", getSyncButtonClickHandler(this.workspace));
+
         this.listInput = $$("candidateListInput");
         this.listInput.attachEvent("onChange", getSearchChangeHandler(this.workspace));
     }
@@ -49,7 +52,7 @@ export class CandidatePickerComponent {
             view: "toolbar",
             elements: [
                 {id: "newCandidateButton", view:"button", type:"icon", icon:"wxi-plus", autowidth:true},
-                {id: "CandidateFindButton", view:"button", type:"icon", 
+                {id: "CandidateSyncButton", view:"button", type:"icon", 
                     icon:"wxi-sync", autowidth: true},
                 {id: "candidateListInput", view:"search", placeholder:"Найти..."},
             ]
@@ -97,7 +100,9 @@ function getCandidateSelectChangeHandler(workspace) {
                 if (workspace.picker.table.exists(workspace.picker.newId)) {
                     workspace.picker.table.remove(workspace.picker.newId);
                 }
-                workspace.viewCandidate(item.id);
+                if (workspace.currentCandidateId !== item.id) {
+                    workspace.viewCandidate(item.id);
+                }
                 workspace.picker.activateViewMode();    
             } 
         }
@@ -109,6 +114,13 @@ function getSearchChangeHandler(workspace) {
     let handler = function(newValue, oldValue) {
         let value = newValue.toLowerCase();
         workspace.search(value);
+    }
+    return handler;
+}
+
+function getSyncButtonClickHandler(workspace) {
+    let handler = function() {
+        workspace.update();
     }
     return handler;
 }

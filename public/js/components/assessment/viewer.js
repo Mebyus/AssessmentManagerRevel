@@ -1,16 +1,12 @@
 import {SelectBoxComponent, getEmployeeCardConfig, getCandidateCardConfig} from "./selectbox.js";
-import {EmployeeRequester} from "./../../models/employees/requester.js";
-import {CandidateRequester} from "./../../models/candidates/requester.js";
 
 export class AssessmentViewerComponent {
-    constructor(workspace, url) {
+    constructor(workspace) {
         this.workspace = workspace;
         this.employeeBox = new SelectBoxComponent(this, [], "EmployeeSelectBox", 
                 "EmployeeBoxScroll", getEmployeeCardConfig);
-        this.employeeBox.model = new EmployeeRequester(url);
         this.candidateBox = new SelectBoxComponent(this, [], "CandidateSelectBox", 
                 "CandidateBoxScroll", getCandidateCardConfig, true, getCandidateCardClickHandler);
-        this.candidateBox.model = new CandidateRequester(url);
         this.currentAssessmentId = "";
         this.currentCandidateId = "";
     }

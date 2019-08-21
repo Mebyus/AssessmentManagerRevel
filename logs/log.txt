@@ -20,3 +20,88 @@ INFO  2019/08/20 17:32:30    app     run.go:26: Running revel server
 INFO  2019/08/20 17:32:30    app revel_hooks.go:32: Go to /@tests to run the tests.          
 INFO  2019/08/20 17:34:35    app     run.go:26: Running revel server                     
 INFO  2019/08/20 17:34:35    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 08:58:37    app     run.go:26: Running revel server                     
+INFO  2019/08/21 08:58:37    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 09:03:29    app     run.go:26: Running revel server                     
+INFO  2019/08/21 09:03:29    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 09:03:35    app     run.go:26: Running revel server                     
+INFO  2019/08/21 09:03:35    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 09:06:20    app     run.go:26: Running revel server                     
+INFO  2019/08/21 09:06:20    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 09:55:01    app     run.go:26: Running revel server                     
+INFO  2019/08/21 09:55:01    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:10:40    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:10:40    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:12:51    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:12:51    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:13:28    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:13:28    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:19:11    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:19:11    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:19:13    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:19:13    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:33:36    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:33:36    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:33:57    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:33:57    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:34:00    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:34:00    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:35:41    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:35:41    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:42:33    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:42:33    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:44:31    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:44:31    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:46:00    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:46:00    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:48:22    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:48:22    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:49:26    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:49:26    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:50:30    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:50:30    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 10:56:47    app     run.go:26: Running revel server                     
+INFO  2019/08/21 10:56:47    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 11:11:14    app     run.go:26: Running revel server                     
+INFO  2019/08/21 11:11:14    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 11:33:03    app     run.go:26: Running revel server                     
+INFO  2019/08/21 11:33:03    app revel_hooks.go:32: Go to /@tests to run the tests.          
+ERROR 2019/08/21 11:37:02    app Application.go:71: Failed to find user                      ip=127.0.0.1 action=Application.Login error="Получение данных пользователя из БД:\n%!(EXTRA *errors.errorString=sql: no rows in result set)"  path=/login method=POST namespace=App\\ user=Руддщ
+INFO  2019/08/21 11:38:38    app     run.go:26: Running revel server                     
+INFO  2019/08/21 11:38:38    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 11:38:43    app     run.go:26: Running revel server                     
+INFO  2019/08/21 11:38:43    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 11:40:49    app     run.go:26: Running revel server                     
+INFO  2019/08/21 11:40:49    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 11:47:46    app     run.go:26: Running revel server                     
+INFO  2019/08/21 11:47:46    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 11:48:58    app     run.go:26: Running revel server                     
+INFO  2019/08/21 11:48:58    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 12:26:09    app     run.go:27: Running revel server                     
+INFO  2019/08/21 12:26:09    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 12:39:44    app     run.go:27: Running revel server                     
+INFO  2019/08/21 12:39:44    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 12:41:41    app     run.go:27: Running revel server                     
+INFO  2019/08/21 12:41:41    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 12:43:02    app     run.go:27: Running revel server                     
+INFO  2019/08/21 12:43:02    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 12:47:56    app     run.go:27: Running revel server                     
+INFO  2019/08/21 12:47:56    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 12:48:43    app     run.go:27: Running revel server                     
+INFO  2019/08/21 12:48:43    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 12:50:21    app     run.go:27: Running revel server                     
+INFO  2019/08/21 12:50:34    app     run.go:27: Running revel server                     
+INFO  2019/08/21 12:51:28    app     run.go:27: Running revel server                     
+INFO  2019/08/21 12:51:28    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 12:55:01    app     run.go:27: Running revel server                     
+INFO  2019/08/21 12:55:01    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 12:55:27    app     run.go:27: Running revel server                     
+INFO  2019/08/21 12:55:27    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 12:55:35    app     run.go:27: Running revel server                     
+INFO  2019/08/21 12:55:35    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 12:57:09    app     run.go:27: Running revel server                     
+INFO  2019/08/21 12:57:09    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 14:00:37    app     run.go:27: Running revel server                     
+INFO  2019/08/21 14:00:37    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/21 14:57:17    app     run.go:27: Running revel server                     
+INFO  2019/08/21 14:57:18    app revel_hooks.go:32: Go to /@tests to run the tests.          

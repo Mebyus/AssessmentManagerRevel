@@ -5,7 +5,7 @@ import {CandidateRequester} from "./../../models/candidates/requester.js";
 export class CandidateWorkspaceComponent {
     constructor(url) {
         this.picker = new CandidatePickerComponent(this);
-        this.viewer = new CandidateViewerComponent(this, url);
+        this.viewer = new CandidateViewerComponent(this);
         this.model = new CandidateRequester(url);
         this.currentCandidateId = "";
     }
@@ -29,7 +29,12 @@ export class CandidateWorkspaceComponent {
     }
 
     updateList() {
-        this.model.getAll(candidates => this.picker.set.call(this.picker, candidates));
+        let searchString = this.picker.listInput.getValue();
+        if (searchString) {
+            this.search(searchString);
+        } else {
+            this.model.getAll(candidates => this.picker.set.call(this.picker, candidates));
+        }
     }
 
     viewCandidate(id) {
@@ -37,7 +42,7 @@ export class CandidateWorkspaceComponent {
         this.viewer.selector.currentCandidateId = id;
         if (id) {
             this.model.get(id, candidate => this.viewer.view.call(this.viewer, candidate));
-            this.viewer.model.getAll(assessments => this.viewer.selector.setOptions(assessments));
+            this.model.getAllAssessmentPromise(assessments => this.viewer.selector.setOptions(assessments));
         }
     }
 
@@ -89,7 +94,7 @@ export class CandidateWorkspaceComponent {
                 this.clearViewer();
                 this.viewer.activateCreateMode();
 
-                this.viewer.model.getAll(assessments => this.viewer.selector.setOptions(assessments));
+                this.model.getAllAssessmentPromise(assessments => this.viewer.selector.setOptions(assessments));
                 break;
 
             default:

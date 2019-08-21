@@ -5,7 +5,7 @@ import {AssessmentRequester} from "./../../models/assessments/requester.js"
 export class AssessmentWorkspaceComponent {
     constructor(url) {
         this.picker = new AssessmentPickerComponent(this);
-        this.viewer = new AssessmentViewerComponent(this, url);
+        this.viewer = new AssessmentViewerComponent(this);
         this.model = new AssessmentRequester(url);
         this.currentAssessmentId = "";
     }

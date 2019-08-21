@@ -53,7 +53,7 @@ export class AssessmentPickerComponent {
                 {id: "dateTime", header:"Дата", fillspace:true, 
                     format:function(strDate){
                         if (strDate) {
-                            return new Date(strDate).toDateString();
+                            return new Date(strDate).toLocaleString('ru-RU');
                         }
                         return "";
                     }

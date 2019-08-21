@@ -1,13 +1,22 @@
+import {encodeQueryData} from "./../query.js";
+
 export class CandidateRequester {
     constructor(url) {
         this.url = url;
     }
 
-    search(searchString, callAfterResponse) {
-        let url = new URL(this.url + "/candidate");
-        let params = {search: searchString};
+    getAllAssessmentPromise(callAfterResponse) {
+        let url = this.url + "/assessment";
+        let options = {
+            method: "GET",
+        };
 
-        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+        return fetch(url, options).then(resp => resp.json()).then(result => callAfterResponse(result));
+    }
+
+    search(searchString, callAfterResponse) {
+        let params = {search: searchString};
+        let url = this.url + "/candidate" + "?" + encodeQueryData(params);
 
         fetch(url)
         .then(resp => resp.json())

@@ -8,7 +8,11 @@ module:testrunner
 
 
 GET     /                                       Application.Index
-GET     /manager                                Application.Manager
+POST    /login                                  Application.Login
+GET     /logout                                 Application.Logout
+GET     /register                               Application.Register
+POST    /register                               Application.SaveUser
+GET     /manager                                Manager.Index
 
 GET     /candidate                              CandidateController.Get
 GET     /candidate/:id                          CandidateController.GetById

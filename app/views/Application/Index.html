@@ -1,14 +1,12 @@
-{% set title = "Home" %}
-{% include "header.html" %}
+{{ set . "title" "Home" }}
+{{ template "header.html" .}}
 
 <div id="login">
 
-  (try with demo/demo)
-
-  <form action="{% url "Application.Login" %}" id="formLogin" method="POST">
+  <form action = "{{ url "Application.Login" }}" id="formLogin" method="POST">
     <p class="field">
       <label>Login Name:</label>
-      <input type="text" name="username" size="19" value="{{flash.username}}" />
+      <input type="text" name="username" size="19" value=""/>
     </p>
     <p class="field">
       <label>Password:</label>
@@ -24,9 +22,10 @@
   </form>
 
   <p>
-    <a href="{% url "Application.Register" %}">Register New User</a>
+    <a href = "{{ url "Application.Register" }}">Register New User</a>
   </p>
 
 </div>
 
-{% include "footer.html" %}
+{{ template "flash.html" }}
+{{ template "footer.html" .}}

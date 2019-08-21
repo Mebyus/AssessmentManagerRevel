@@ -25,6 +25,7 @@ export class AssessmentSelectorComponent {
 
     clear() {
         this.richselect.setValue("");
+        this.list.clearAll();
     }
 
     activateEmptyMode() {
@@ -67,6 +68,7 @@ export class AssessmentSelectorComponent {
             element.value = element.dateTime;
         });
         this.richselect.define("options", data);
+        this.richselect.setValue("");
     }
 
     getWebixConfig() {
@@ -157,8 +159,8 @@ function getRichSelectChangeHandler(workspace) {
     let handler = function(newValue, oldValue) {
         if (newValue !== workspace.selectedId) {
             let item = workspace.list.getSelectedItem();
-            if (item) {
-                let assessment = workspace.data.find(value => value.id === newValue);
+            let assessment = workspace.data.find(value => value.id === newValue);
+            if (item && assessment) {
                 item.dateTime = assessment.dateTime;
                 item.assessmentId = parseInt(assessment.id);
                 item.employeeId = parseInt(workspace.currentEmployeeId);

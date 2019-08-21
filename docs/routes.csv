@@ -1,0 +1,38 @@
+METHOD      URI Pattern                     Controller.Method               Comment
+##########################################################################################################
+                                                                            Авторизация и регистрация пользователя
+GET         /                               Application.Index               Получение страницы аторизации
+POST        /login                          Application.Login               Запрос на авторизацию
+GET         /logout                         Application.Logout              Запрос на logout
+GET         /register                       Application.Register            Получение страницы регистрации
+POST        /register                       Application.SaveUser            Запрос на регистрацию нового пользователя
+##########################################################################################################
+                                                                            Окно приложения
+GET         /manager                        Manager.Index                   Получение страницы приложения
+##########################################################################################################
+                                                                            Кандидаты
+GET         /candidate                      CandidateController.Get         Запрос всех кандидатов
+            [?search=str]                   CandidateController.Get         Поиск кандидатов по имени
+
+GET         /candidate/:id                  CandidateController.GetById     Запрос кандидата по id
+PUT         /candidate                      CandidateController.Create      Создание нового кандидата
+POST        /candidate/:id                  CandidateController.Update      Обновление данных кандидата
+DELETE      /candidate/:id                  CandidateController.Delete      Удаление кандидата по id
+##########################################################################################################
+                                                                            Сотрудники
+GET         /employee                       EmployeeController.Get          Запрос всех сотрудников
+            [?search=str]                   EmployeeController.Get          Поиск сотрудников по имени
+
+GET         /employee/:id                   EmployeeController.GetById      Запрос сотрудника по id
+PUT         /employee                       EmployeeController.Create       Создание нового сотрудника
+POST        /employee/:id                   EmployeeController.Update       Обновление данных сотрудника
+DELETE      /employee/:id                   EmployeeController.Delete       Удаление сотрудника по id
+##########################################################################################################
+                                                                            Собеседования
+GET         /assessment                     AssessmentController.Get        Запрос всех собеседований
+            [?start=date1&end=date2]        AssessmentController.Get        Поиск собеседований в диапазоне дат
+
+GET         /assessment/:id                 AssessmentController.GetById    Запрос собеседования по id
+PUT         /assessment                     AssessmentController.Create     Создание нового собеседования
+POST        /assessment/:id                 AssessmentController.Update     Обновление данных собеседования
+DELETE      /assessment/:id                 AssessmentController.Delete     Удаление собеседования по id

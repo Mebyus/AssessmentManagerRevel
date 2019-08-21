@@ -3,7 +3,7 @@ import {AssessmentWorkspaceComponent} from "./components/assessment/workspace.js
 import {EmployeeWorkspaceComponent} from "./components/employee/workspace.js";
 
 class AppWorkspace {
-    constructor(url) {
+    constructor(url = "") {
         this.url = url;
         this.candidateWorkspace = new CandidateWorkspaceComponent(url);
         this.assessmentWorkspace = new AssessmentWorkspaceComponent(url);
@@ -47,7 +47,5 @@ class AppWorkspace {
     }
 }
 
-let url = "http://localhost:9000";
-
-let testApp = new AppWorkspace(url);
+let testApp = new AppWorkspace();
 testApp.init();
