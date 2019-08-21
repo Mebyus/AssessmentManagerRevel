@@ -24,6 +24,10 @@ export class AssessmentWorkspaceComponent {
         this.viewAssessment(this.currentAssessmentId);
     }
 
+    search(dateRange) {
+        this.model.search(dateRange, (assessments => this.picker.set.call(this.picker, assessments)));
+    }
+
     updateList() {
         this.model.getAll(assessments => this.picker.set.call(this.picker, assessments));
     }
@@ -60,15 +64,16 @@ export class AssessmentWorkspaceComponent {
     }
 
     deleteCurrentAssessment() {
-        this.model.delete(this.currentAssessmentId, () => function() {
-            this.clearViewer();
-            this.updateList();
-        }.call(this)); 
+        if (this.currentAssessmentId) {
+            this.model.delete(this.currentAssessmentId, () => function() {
+                this.clearViewer();
+                this.updateList();
+            }.call(this)); 
+        }
     }
 
     createFromViewerData() {
         let input = this.viewer.getInputData();
-        console.log(input);
         this.model.add(input, () => this.updateList());
     }
 

@@ -11,6 +11,11 @@ type Assessment struct {
 	CandidateList		[]*CandidateForAssessment		`json:"candidateList"`
 }
 
+type DateRange struct {
+	Start 		string
+	End			string
+}
+
 func (assessment *Assessment) HasEmployees() (bool) {
 	return len(assessment.EmployeeList) != 0
 }

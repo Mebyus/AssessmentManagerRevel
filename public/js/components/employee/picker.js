@@ -14,7 +14,7 @@ export class EmployeePickerComponent {
         this.newButton.attachEvent("onItemClick", getNewEmployeeClickHandler(this.workspace));
 
         this.listInput = $$("EmployeeListInput");
-        this.listInput.attachEvent("onTimedKeyPress", getListInputHandler(this));
+        this.listInput.attachEvent("onChange", getSearchChangeHandler(this.workspace));
     }
 
     set(employees) {
@@ -44,8 +44,10 @@ export class EmployeePickerComponent {
             id: "employeeTableToolbar",
             view: "toolbar",
             elements: [
-                {id: "newEmployeeButton", view:"button", value: "New"},
-                {id: "EmployeeListInput", view:"text", css:"fltr", gravity: 2},
+                {id: "newEmployeeButton", view:"button", type:"icon", icon:"wxi-plus", autowidth:true},
+                {id: "EmployeeSyncButton", view:"button", type:"icon", 
+                icon:"wxi-sync", autowidth: true},
+                {id: "EmployeeListInput", view:"search", placeholder:"Найти...", gravity: 2},
             ]
         }
         
@@ -53,9 +55,9 @@ export class EmployeePickerComponent {
             id: "employeeTable",
             view: "datatable",
             columns: [
-                {id:"lastName", header:"Last Name", fillspace:true},
-                {id:"firstName", header:"First Name", fillspace:true},
-                {id:"middleName", header:"Middle Name", fillspace:true},
+                {id:"lastName", header:"Фамилия", fillspace:true},
+                {id:"firstName", header:"Имя", fillspace:true},
+                {id:"middleName", header:"Отчество", fillspace:true},
             ],
             select: true,
             data: [],
@@ -91,16 +93,24 @@ function getEmployeeSelectChangeHandler(workspace) {
     return handler;
 }
 
-function getListInputHandler(workspace) {
-    let handler = function() {
-        let value = workspace.listInput.getValue().toLowerCase();
-        workspace.table.filter(function(item) {
-            if (item.id !== workspace.newId) {
-                return item.lastName.toLowerCase().indexOf(value) !== -1;            
-            } else {
-                return true;
-            }
-        });
+// function getListInputHandler(workspace) {
+//     let handler = function() {
+//         let value = workspace.listInput.getValue().toLowerCase();
+//         workspace.table.filter(function(item) {
+//             if (item.id !== workspace.newId) {
+//                 return item.lastName.toLowerCase().indexOf(value) !== -1;            
+//             } else {
+//                 return true;
+//             }
+//         });
+//     }
+//     return handler;
+// }
+
+function getSearchChangeHandler(workspace) {
+    let handler = function(newValue, oldValue) {
+        let value = newValue.toLowerCase();
+        workspace.search(value);
     }
     return handler;
 }

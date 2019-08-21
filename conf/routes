@@ -7,7 +7,8 @@ module:testrunner
 # module:jobs
 
 
-GET     /                                       App.Index
+GET     /                                       Application.Index
+GET     /manager                                Application.Manager
 
 GET     /candidate                              CandidateController.Get
 GET     /candidate/:id                          CandidateController.GetById

@@ -14,7 +14,7 @@ export class CandidatePickerComponent {
         this.newButton.attachEvent("onItemClick", getNewCandidateClickHandler(this.workspace));
 
         this.listInput = $$("candidateListInput");
-        this.listInput.attachEvent("onTimedKeyPress", getCandidateListInputHandler(this));
+        this.listInput.attachEvent("onChange", getSearchChangeHandler(this.workspace));
     }
 
     activateNewMode() {
@@ -49,9 +49,9 @@ export class CandidatePickerComponent {
             view: "toolbar",
             elements: [
                 {id: "newCandidateButton", view:"button", type:"icon", icon:"wxi-plus", autowidth:true},
-                {id: "CandidateFindButton", view:"button", type:"iconButton", 
-                    icon:"wxi-search", autowidth: true},
-                {id: "candidateListInput", view:"text", css:"fltr", gravity: 2},
+                {id: "CandidateFindButton", view:"button", type:"icon", 
+                    icon:"wxi-sync", autowidth: true},
+                {id: "candidateListInput", view:"search", placeholder:"Найти..."},
             ]
         }
         
@@ -105,16 +105,10 @@ function getCandidateSelectChangeHandler(workspace) {
     return handler;
 }
 
-function getCandidateListInputHandler(workspace) {
-    let handler = function() {
-        let value = workspace.listInput.getValue().toLowerCase();
-        workspace.table.filter(function(item) {
-            if (item.id !== workspace.newId) {
-                return item.lastName.toLowerCase().indexOf(value) !== -1;            
-            } else {
-                return true;
-            }
-        });
+function getSearchChangeHandler(workspace) {
+    let handler = function(newValue, oldValue) {
+        let value = newValue.toLowerCase();
+        workspace.search(value);
     }
     return handler;
 }

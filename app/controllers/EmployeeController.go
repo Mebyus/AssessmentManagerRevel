@@ -19,10 +19,11 @@ type EmployeeController struct {
 // сотрудников в формате JSON.
 func (controller *EmployeeController) Get() revel.Result {
 	var employees *[]structures.Employee
-	var err error
+
+	searchStr := controller.Params.Query.Get("search")
 
 	controller.provider = &providers.EmployeeProvider{}
-	err = controller.provider.Init()
+	err := controller.provider.Init()
 	if err != nil {
 		return controller.RenderError(err)
 	}
@@ -33,7 +34,11 @@ func (controller *EmployeeController) Get() revel.Result {
 		}
 	}()
 
-	employees, err = controller.provider.Get()
+	if (searchStr == "") {
+		employees, err = controller.provider.Get()
+	} else {
+		employees, err = controller.provider.Search(searchStr)
+	}
 
 	if err != nil {
 		fmt.Println(err)

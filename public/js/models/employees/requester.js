@@ -3,6 +3,17 @@ export class EmployeeRequester {
         this.url = url;
     }
 
+    search(searchString, callAfterResponse) {
+        let url = new URL(this.url + "/employee");
+        let params = {search: searchString};
+
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+
+        fetch(url)
+        .then(resp => resp.json())
+        .then(result => callAfterResponse(result));
+    }
+
     get(id, callAfterResponse) {
         let url = this.url + "/employee" + "/" + id;
         let options = {

@@ -1,0 +1,20 @@
+CRIT  2019/08/20 17:20:08  revel router.go:843: init: router initialize error           section=router error="Route validation error (in C:\\Users\\Mebyus\\go\\src\\AssessmentManager\\conf\\routes:11): revel/controller: failed to find action App\\application.login Stack: [utils.go router.go router.go router.go router.go router.go revel_hooks.go server.go server.go run.go main.go proc.go asm_amd64.s]"  
+CRIT  2019/08/20 17:20:08  revel  panic.go:522: Recovered error in startup              error="init: router initialize error"  
+ERROR 2019/08/20 17:21:55  revel template.go:206: Refresh: Template compilation error (In C:\Users\Mebyus\go\src\AssessmentManager\app\views\App\Login.html around line 11):
+	Template Compilation Error (in App/Login.html:11): function "flash" not defined Stack:  section=template 
+ERROR 2019/08/20 17:21:58  revel template.go:206: Refresh: Template compilation error (In C:\Users\Mebyus\go\src\AssessmentManager\app\views\App\Login.html around line 11):
+	Template Compilation Error (in App/Login.html:11): function "flash" not defined Stack:  section=template 
+ERROR 2019/08/20 17:21:58  revel template.go:206: Refresh: Template compilation error (In C:\Users\Mebyus\go\src\AssessmentManager\app\views\App\Login.html around line 11):
+	Template Compilation Error (in App/Login.html:11): function "flash" not defined Stack:  section=template 
+ERROR 2019/08/20 17:23:34  revel template.go:206: Refresh: Template compilation error (In C:\Users\Mebyus\go\src\AssessmentManager\app\views\App\Login.html around line 11):
+	Template Compilation Error (in App/Login.html:11): function "flash" not defined Stack:  section=template 
+ERROR 2019/08/20 17:41:35  revel template.go:206: Refresh: Template compilation error (In C:\Users\Mebyus\go\src\AssessmentManager\app\views\Application\Index.html___jb_tmp___ around line 11):
+	Template Compilation Error (in Application/Index.html___jb_tmp___:11): function "flash" not defined Stack:  section=template 
+ERROR 2019/08/20 17:41:35  revel template.go:206: Refresh: Template compilation error (In C:\Users\Mebyus\go\src\AssessmentManager\app\views\Application\Index.html around line 11):
+	Template Compilation Error (in Application/Index.html:11): function "flash" not defined Stack:  section=template 
+ERROR 2019/08/20 17:41:35  revel template.go:206: Refresh: Template compilation error (In C:\Users\Mebyus\go\src\AssessmentManager\app\views\Application\Index.html around line 11):
+	Template Compilation Error (in Application/Index.html:11): function "flash" not defined Stack: section=template  
+ERROR 2019/08/20 17:41:47  revel template.go:206: Refresh: Template compilation error (In C:\Users\Mebyus\go\src\AssessmentManager\app\views\Application\Index.html around line 11):
+	Template Compilation Error (in Application/Index.html:11): function "flash" not defined Stack:  section=template 
+ERROR 2019/08/20 17:41:47  revel template.go:206: Refresh: Template compilation error (In C:\Users\Mebyus\go\src\AssessmentManager\app\views\Application\Index.html around line 11):
+	Template Compilation Error (in Application/Index.html:11): function "flash" not defined Stack:  section=template 

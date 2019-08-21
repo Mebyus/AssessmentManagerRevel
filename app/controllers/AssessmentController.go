@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"encoding/json"
-	"fmt"
 	"AssessmentManager/app/providers"
 	"AssessmentManager/app/structures"
+	"encoding/json"
+	"fmt"
 	"github.com/revel/revel"
+	"strings"
 )
 
 type AssessmentController struct {
@@ -19,10 +20,12 @@ type AssessmentController struct {
 // собеседований в формате JSON.
 func (controller *AssessmentController) Get() revel.Result {
 	var assessments *[]structures.Assessment
-	var err error
+
+	startDateStr := controller.Params.Query.Get("start")
+	endDateStr := controller.Params.Query.Get("end")
 
 	controller.provider = &providers.AssessmentProvider{}
-	err = controller.provider.Init()
+	err := controller.provider.Init()
 	if err != nil {
 		return controller.RenderError(err)
 	}
@@ -33,7 +36,15 @@ func (controller *AssessmentController) Get() revel.Result {
 		}
 	}()
 
-	assessments, err = controller.provider.Get()
+	if startDateStr == "" || endDateStr == "" {
+		assessments, err = controller.provider.Get()
+	} else {
+		dateRange := structures.DateRange{
+			strings.ReplaceAll(startDateStr, "+", " "),
+			strings.ReplaceAll(endDateStr, "+", " "),
+		}
+		assessments, err = controller.provider.Search(&dateRange)
+	}
 
 	if err != nil {
 		fmt.Println(err)

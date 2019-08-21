@@ -20,10 +20,11 @@ type CandidateController struct {
 // кандидатов в формате JSON.
 func (controller *CandidateController) Get() revel.Result {
 	var candidates *[]structures.Candidate
-	var err error
+
+	searchStr := controller.Params.Query.Get("search")
 
 	controller.provider = &providers.CandidateProvider{}
-	err = controller.provider.Init()
+	err := controller.provider.Init()
 	if err != nil {
 		return controller.RenderError(err)
 	}
@@ -34,7 +35,11 @@ func (controller *CandidateController) Get() revel.Result {
 		}
 	}()
 
-	candidates, err = controller.provider.Get()
+	if (searchStr == "") {
+		candidates, err = controller.provider.Get()
+	} else {
+		candidates, err = controller.provider.Search(searchStr)
+	}
 
 	if err != nil {
 		fmt.Println(err)

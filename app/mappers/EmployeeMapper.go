@@ -11,6 +11,39 @@ type EmployeeMapper struct {
 	Mapper
 }
 
+// EmployeeMapper.Search метод оформляет и передает запрос
+// GET /employee на получение списка всех сотрудников в БД.
+func (mapper *EmployeeMapper) Search(searchStr string) (*[]structures.Employee, error) {
+	employees := []structures.Employee{}
+	columnString, _ := tagString("sql", structures.Employee{})
+	query := "SELECT " + columnString +
+		" FROM employee WHERE last_name ILIKE $1 || '%' OR " +
+		"first_name ILIKE $1 || '%' OR " +
+		"middle_name ILIKE $1 || '%';";
+
+	rows, err := mapper.connection.Query(query, searchStr)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		employee := structures.Employee{}
+		err = rows.Scan(tagPtr("sql", &employee)...)
+
+		if err != nil {
+			defer func() {
+				closeErr := rows.Close()
+				if closeErr != nil {
+					fmt.Println(closeErr)
+				}
+			}()
+			return nil, err
+		}
+		employees = append(employees, employee)
+	}
+	return &employees, nil
+}
+
 // EmployeeMapper.Get метод оформляет и передает запрос
 // GET /employee на получение списка всех сотрудников в БД.
 func (mapper *EmployeeMapper) Get() (*[]structures.Employee, error) {

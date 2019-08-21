@@ -24,6 +24,10 @@ export class EmployeeWorkspaceComponent {
         this.viewEmployee(this.currentEmployeeId);
     }
 
+    search(searchString) {
+        this.model.search(searchString, (employees => this.picker.set.call(this.picker, employees)));
+    }
+
     updateList() {
         this.model.getAll(employees => this.picker.set.call(this.picker, employees));
     }
@@ -42,15 +46,17 @@ export class EmployeeWorkspaceComponent {
     }
 
     deleteCurrentEmployee() {
-        this.model.delete(this.currentEmployeeId, () => {
-            this.clearViewer();
-            this.updateList();
-            webix.message({
-                text: "Сотрудник удален",
-                type: "success",
-                expire: 2000,
+        if (this.currentEmployeeId) {
+            this.model.delete(this.currentEmployeeId, () => {
+                this.clearViewer();
+                this.updateList();
+                webix.message({
+                    text: "Сотрудник удален",
+                    type: "success",
+                    expire: 2000,
+                });
             });
-        });   
+        }
     }
 
     createFromViewerData() {

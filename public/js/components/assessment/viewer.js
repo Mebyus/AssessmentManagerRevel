@@ -171,7 +171,7 @@ export class AssessmentViewerComponent {
                     gravity: 1,
                     view:"datepicker", 
                     timepicker:true, 
-                    label: "Дата и время собеседования", 
+                    label: "Дата и время", 
                     labelPosition: "top",
                     format: "%d.%m.%y -- %H:%i",
                 },

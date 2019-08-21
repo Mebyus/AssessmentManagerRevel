@@ -24,6 +24,10 @@ export class CandidateWorkspaceComponent {
         this.viewCandidate(this.currentCandidateId);
     }
 
+    search(searchString) {
+        this.model.search(searchString, (candidates => this.picker.set.call(this.picker, candidates)));
+    }
+
     updateList() {
         this.model.getAll(candidates => this.picker.set.call(this.picker, candidates));
     }
@@ -42,15 +46,17 @@ export class CandidateWorkspaceComponent {
     }
 
     deleteCurrentCandidate() {
-        this.model.delete(this.currentCandidateId, () => {
-            this.clearViewer();
-            this.updateList();
-            webix.message({
-                text: "Кандидат удален",
-                type: "success",
-                expire: 2000,
-            });
-        });        
+        if (this.currentCandidateId) {
+            this.model.delete(this.currentCandidateId, () => {
+                this.clearViewer();
+                this.updateList();
+                webix.message({
+                    text: "Кандидат удален",
+                    type: "success",
+                    expire: 2000,
+                });
+            });        
+        }
     }
 
     createFromViewerData() {
@@ -82,6 +88,8 @@ export class CandidateWorkspaceComponent {
             case "create":
                 this.clearViewer();
                 this.viewer.activateCreateMode();
+
+                this.viewer.model.getAll(assessments => this.viewer.selector.setOptions(assessments));
                 break;
 
             default:

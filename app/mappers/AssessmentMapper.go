@@ -22,6 +22,38 @@ func (mapper *AssessmentMapper) Init(connection *sql.DB) (error) {
 
 // AssessmentMapper.Get метод оформляет и передает запрос
 // GET /assessment на получение списка всех собеседований в БД.
+func (mapper *AssessmentMapper) Search(dateRange *structures.DateRange) (*[]structures.Assessment, error) {
+	assessments := []structures.Assessment{}
+	columnString, _ := tagString("sql", structures.Assessment{})
+	query := "SELECT " + columnString +
+		" FROM assessment WHERE " +
+		"date_time <@ tsrange($1, $2, '[]');"
+
+	rows, err := mapper.connection.Query(query, dateRange.Start, dateRange.End)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		assessment := structures.Assessment{}
+		err = rows.Scan(tagPtr("sql", &assessment)...)
+
+		if err != nil {
+			defer func() {
+				closeErr := rows.Close()
+				if closeErr != nil {
+					fmt.Println(closeErr)
+				}
+			}()
+			return nil, err
+		}
+		assessments = append(assessments, assessment)
+	}
+	return &assessments, nil
+}
+
+// AssessmentMapper.Get метод оформляет и передает запрос
+// GET /assessment на получение списка всех собеседований в БД.
 func (mapper *AssessmentMapper) Get() (*[]structures.Assessment, error) {
 	assessments := []structures.Assessment{}
 	columnString, _ := tagString("sql", structures.Assessment{})

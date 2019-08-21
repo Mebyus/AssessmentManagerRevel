@@ -3,6 +3,17 @@ export class AssessmentRequester {
         this.url = url;
     }
 
+    search(dateRange, callAfterResponse) {
+        let url = new URL(this.url + "/assessment");
+        let params = dateRange;
+
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+
+        fetch(url)
+        .then(resp => resp.json())
+        .then(result => callAfterResponse(result));
+    }
+
     getAllCandidatePromise(callAfterResponse) {
         let url = this.url + "/candidate";
         let options = {

@@ -3,6 +3,17 @@ export class CandidateRequester {
         this.url = url;
     }
 
+    search(searchString, callAfterResponse) {
+        let url = new URL(this.url + "/candidate");
+        let params = {search: searchString};
+
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+
+        fetch(url)
+        .then(resp => resp.json())
+        .then(result => callAfterResponse(result));
+    }
+
     get(id, callAfterResponse) {
         let url = this.url + "/candidate" + "/" + id;
         let options = {

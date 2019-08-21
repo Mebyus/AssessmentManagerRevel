@@ -12,6 +12,16 @@ type CandidateProvider struct {
 	mapper *mappers.CandidateMapper
 }
 
+// CandidateProvider.GetById передает запрос GET /candidate/:id мапперу
+func (provider *CandidateProvider) Search(searchStr string) (*[]structures.Candidate, error) {
+	provider.mapper = &mappers.CandidateMapper{}
+	err := provider.mapper.Connect(provider.connection)
+	if err != nil {
+		return nil, fmt.Errorf("Создание соединения маппера с БД:", err)
+	}
+	return provider.mapper.Search(searchStr)
+}
+
 // CandidateProvider.Get передает запрос GET /candidate мапперу
 func (provider *CandidateProvider) Get() (*[]structures.Candidate, error) {
 	provider.mapper = &mappers.CandidateMapper{}

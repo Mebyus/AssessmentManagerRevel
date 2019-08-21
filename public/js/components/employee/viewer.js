@@ -53,9 +53,9 @@ export class EmployeeViewerComponent {
             id: "employeeViewerToolbar",
             view: "toolbar",
             elements: [
-                {view:"label", label:"Employee info", align:"center"},
-                {id: "employeeConfirmButton", view:"button", value:"Confirm"},
-                {id: "employeeDeleteButton", view:"button", value:"Delete"},
+                {view:"label", label:"Информация о сотруднике", align:"center"},
+                {id: "employeeConfirmButton", view:"button", type:"icon", icon:"wxi-check", autowidth:true},
+                {id: "employeeDeleteButton", view:"button", type:"icon", icon:"wxi-trash", autowidth:true},
             ],
         }
 
@@ -66,32 +66,13 @@ export class EmployeeViewerComponent {
                 {
                     rows:
                     [
-                        {name: "firstName", label: "First Name", labelPosition: "top", view:"text", placeholder: "First Name"},
-                        {name: "middleName", label: "Middle Name", labelPosition: "top", view:"text", placeholder: "Middle Name"},
-                        {name: "lastName", label: "Last Name", labelPosition: "top", view: "text", placeholder: "Last Name"},
+                        {name: "firstName", label: "Имя", labelPosition: "top", view:"text",},
+                        {name: "middleName", label: "Отчество", labelPosition: "top", view:"text",},
+                        {name: "lastName", label: "Фамилия", labelPosition: "top", view: "text",},
                     ]
                 },
             ]}],
         }
-
-        // let employeeCanlendar = {
-        //     view:"calendar",
-        //     id:"employeeCalendar",
-        //     date:new Date(),
-        //     weekHeader:true,
-        //     events:webix.Date.isHoliday,
-        //     width:300,
-        //     height:250
-        // };
-
-        // let employeeCalendarToolbar = {
-        //     view:"toolbar",
-        //     id:"employeeCalendarToolbar",
-        //     rows: [
-        //         {view:"button", value:"Assign"},
-        //         {view:"button", value:"Dismiss"},
-        //     ]
-        // }
 
         let scrollableViewverPartUI = {
             rows:[
@@ -99,7 +80,7 @@ export class EmployeeViewerComponent {
                 {},
                 {
                     rows:[
-                        {view: "label", label: "Assessment", align: "center"},
+                        {view: "label", label: "Собеседования", align: "center"},
                         this.selector.getWebixConfig(),
                     ],
                 }

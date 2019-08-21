@@ -11,6 +11,16 @@ type AssessmentProvider struct {
 }
 
 // AssessmentProvider.Get передает запрос GET /assessment мапперу
+func (provider *AssessmentProvider) Search(dateRange *structures.DateRange) (*[]structures.Assessment, error) {
+	provider.mapper = &mappers.AssessmentMapper{}
+	err := provider.mapper.Init(provider.connection)
+	if err != nil {
+		return nil, err
+	}
+	return provider.mapper.Search(dateRange)
+}
+
+// AssessmentProvider.Get передает запрос GET /assessment мапперу
 func (provider *AssessmentProvider) Get() (*[]structures.Assessment, error) {
 	provider.mapper = &mappers.AssessmentMapper{}
 	err := provider.mapper.Init(provider.connection)

@@ -13,7 +13,8 @@ export class AssessmentPickerComponent {
         this.newButton.attachEvent("onItemClick", getNewAssessmentClickHandler(this.workspace));
 
         this.listInput = $$("AssessmentListInput");
-        this.listInput.attachEvent("onTimedKeyPress", getListInputHandler(this));
+        this.listInput.attachEvent("onChange", getSearchChangeHandler(this.workspace));
+        this.listInput.getPopup().attachEvent("onView");
     }
 
     set(assessments) {
@@ -39,7 +40,9 @@ export class AssessmentPickerComponent {
             view: "toolbar",
             elements: [
                 {id: "newAssessmentButton", view:"button", type:"icon", icon:"wxi-plus", autowidth:true},
-                {id: "AssessmentListInput", view:"text", css:"fltr", gravity: 2},
+                {id: "AssessmentSyncButton", view:"button", type:"icon", 
+                    icon:"wxi-sync", autowidth: true},
+                {id: "AssessmentListInput", view:"daterangepicker", placeholder:"Найти..."},
             ]
         }
         
@@ -53,7 +56,8 @@ export class AssessmentPickerComponent {
                             return new Date(strDate).toDateString();
                         }
                         return "";
-                }},
+                    }
+                },
             ],
             select: true,
             data: [],
@@ -72,16 +76,29 @@ export class AssessmentPickerComponent {
     }
 }
 
-function getListInputHandler(workspace) {
-    let handler = function() {
-        let value = workspace.listInput.getValue().toLowerCase();
-        workspace.table.filter(function(item) {
-            if (item.id !== workspace.newId) {
-                return item.dateTime.toLowerCase().indexOf(value) !== -1;            
-            } else {
-                return true;
-            }
-        });
+// function getListInputHandler(workspace) {
+//     let handler = function() {
+//         let value = workspace.listInput.getValue().toLowerCase();
+//         workspace.table.filter(function(item) {
+//             if (item.id !== workspace.newId) {
+//                 return item.dateTime.toLowerCase().indexOf(value) !== -1;            
+//             } else {
+//                 return true;
+//             }
+//         });
+//     }
+//     return handler;
+// }
+
+function getSearchChangeHandler(workspace) {
+    let handler = function(newValue, oldValue) {
+        if (newValue.start && newValue.end) {
+            let dateRange = {
+                start: newValue.start.toJSON(),
+                end: newValue.end.toJSON(),
+            };
+            workspace.search(dateRange);
+        }
     }
     return handler;
 }

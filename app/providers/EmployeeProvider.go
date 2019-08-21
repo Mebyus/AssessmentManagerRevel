@@ -12,6 +12,16 @@ type EmployeeProvider struct {
 }
 
 // EmployeeProvider.Get передает запрос GET /employee мапперу
+func (provider *EmployeeProvider) Search(searchStr string) (*[]structures.Employee, error) {
+	provider.mapper = &mappers.EmployeeMapper{}
+	err := provider.mapper.Connect(provider.connection)
+	if err != nil {
+		return nil, fmt.Errorf("Создание соединения маппера с БД:", err)
+	}
+	return provider.mapper.Search(searchStr)
+}
+
+// EmployeeProvider.Get передает запрос GET /employee мапперу
 func (provider *EmployeeProvider) Get() (*[]structures.Employee, error) {
 	provider.mapper = &mappers.EmployeeMapper{}
 	err := provider.mapper.Connect(provider.connection)

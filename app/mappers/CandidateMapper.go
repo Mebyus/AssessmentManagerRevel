@@ -13,14 +13,35 @@ type CandidateMapper struct {
 	Mapper
 }
 
-func (mapper *CandidateMapper) GetSearch(searchStr string) (*[]structures.Candidate, error) {
+func (mapper *CandidateMapper) Search(searchStr string) (*[]structures.Candidate, error) {
 	candidates := []structures.Candidate{}
 	columnString, _ := tagString("sql", structures.Candidate{})
 	query := "SELECT " + columnString +
-		" FROM candidate WHERE last_name ILIKE '$1%' OR " +
-		"first_name ILIKE '$2%' OR " +
-		"middle_name ILIKE '$3%';";
-	
+		" FROM candidate WHERE last_name ILIKE $1 || '%' OR " +
+		"first_name ILIKE $1 || '%' OR " +
+		"middle_name ILIKE $1 || '%';";
+
+	rows, err := mapper.connection.Query(query, searchStr)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		candidate := structures.Candidate{}
+		err = rows.Scan(tagPtr("sql", &candidate)...)
+
+		if err != nil {
+			defer func() {
+				closeErr := rows.Close()
+				if closeErr != nil {
+					fmt.Println(closeErr)
+				}
+			}()
+			return nil, err
+		}
+		candidates = append(candidates, candidate)
+	}
+	return &candidates, nil
 }
 
 // CandidateMapper.Get метод оформляет и передает запрос

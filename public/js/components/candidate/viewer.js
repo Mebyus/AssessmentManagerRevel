@@ -59,12 +59,12 @@ export class CandidateViewerComponent {
                 {
                     rows:
                     [
-                        {name:"firstName", label: "First Name", labelPosition: "top", view:"text", placeholder: "First Name"},
-                        {name:"middleName", label: "Middle Name", labelPosition: "top", view:"text", placeholder: "Middle Name"},
-                        {name:"lastName", label: "Last Name", labelPosition: "top", view: "text", placeholder: "Last Name"},
+                        {name:"firstName", label: "Имя", labelPosition: "top", view:"text",},
+                        {name:"middleName", label: "Отчество", labelPosition: "top", view:"text",},
+                        {name:"lastName", label: "Фамилия", labelPosition: "top", view: "text",},
                         {
                             name: "birthDate",
-                            label: "Birthdate",
+                            label: "Дата рождения",
                             labelPosition: "top", 
                             view:"datepicker", 
                             value: new Date(), 
@@ -72,8 +72,8 @@ export class CandidateViewerComponent {
                     ]
                 },
                 {rows:[
-                    {name:"email", label: "Email", labelPosition: "top", view:"text", placeholder: "myawesome@randommail.com"},
-                    {name:"phone", label: "Phone", labelPosition: "top", view:"text", placeholder: "+7 931 284 30 31"},
+                    {name:"email", label: "Email", labelPosition: "top", view:"text",},
+                    {name:"phone", label: "Телефон", labelPosition: "top", view:"text",},
                     {},
             ],
             },
@@ -89,7 +89,7 @@ export class CandidateViewerComponent {
                 personalInfoForm,
                 {
                     rows: [
-                        {view: "label", label: "Assessment", align: "center"},
+                        {view: "label", label: "Собеседования", align: "center"},
                         assessmentForm,
                     ],
                 },
@@ -104,7 +104,7 @@ export class CandidateViewerComponent {
                 {
                     view: "toolbar",
                     elements: [
-                        {view:"label", label:"Candidate info", align:"center"},
+                        {view:"label", label:"Информация о кандидате", align:"center"},
                         {id: "candidateConfirmButton", view:"button", value:"Confirm"},
                         {id: "candidateDeleteButton", view:"button", value:"Delete"},
                     ] 
