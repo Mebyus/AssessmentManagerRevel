@@ -13,6 +13,9 @@ export class EmployeePickerComponent {
         this.newButton = $$("newEmployeeButton");
         this.newButton.attachEvent("onItemClick", getNewEmployeeClickHandler(this.workspace));
 
+        this.syncButton = $$("EmployeeSyncButton");
+        this.syncButton.attachEvent("onItemClick", getSyncButtonClickHandler(this.workspace));
+
         this.listInput = $$("EmployeeListInput");
         this.listInput.attachEvent("onChange", getSearchChangeHandler(this.workspace));
     }
@@ -85,7 +88,9 @@ function getEmployeeSelectChangeHandler(workspace) {
                 if (workspace.picker.table.exists(workspace.picker.newId)) {
                     workspace.picker.table.remove(workspace.picker.newId);
                 }
-                workspace.viewEmployee(item.id);
+                if (workspace.currentEmployeeId !== item.id) {
+                    workspace.viewEmployee(item.id);
+                }
                 workspace.picker.activateViewMode();    
             }   
         }
@@ -111,6 +116,13 @@ function getSearchChangeHandler(workspace) {
     let handler = function(newValue, oldValue) {
         let value = newValue.toLowerCase();
         workspace.search(value);
+    }
+    return handler;
+}
+
+function getSyncButtonClickHandler(workspace) {
+    let handler = function() {
+        workspace.update();
     }
     return handler;
 }

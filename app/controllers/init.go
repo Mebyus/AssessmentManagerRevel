@@ -3,6 +3,6 @@ package controllers
 import "github.com/revel/revel"
 
 func init() {
-	revel.InterceptMethod(Application.AddUser, revel.BEFORE)
-	revel.InterceptMethod(Manager.checkUser, revel.BEFORE)
+	//revel.InterceptMethod(LoginController.AddUser, revel.BEFORE)
+	revel.InterceptMethod(ApplicationController.checkUser, revel.BEFORE)
 }

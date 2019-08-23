@@ -29,7 +29,12 @@ export class EmployeeWorkspaceComponent {
     }
 
     updateList() {
-        this.model.getAll(employees => this.picker.set.call(this.picker, employees));
+        let searchString = this.picker.listInput.getValue();
+        if (searchString) {
+            this.search(searchString);
+        } else {
+            this.model.getAll(employees => this.picker.set.call(this.picker, employees));
+        }
     }
 
     viewEmployee(id) {
@@ -59,6 +64,18 @@ export class EmployeeWorkspaceComponent {
         }
     }
 
+    updateCurrentEmployee() {
+        if (this.picker.table.exists(this.currentEmployeeId)) {
+            let tableIndex = this.picker.table.getIndexById(this.currentEmployeeId);
+            this.model.get(this.currentEmployeeId, employee => {
+                this.picker.table.remove(this.currentEmployeeId);
+                let newId = this.picker.table.add(employee, tableIndex);
+                this.picker.table.select(newId);
+                this.currentEmployeeId = newId;
+            });
+        }
+    }
+
     createFromViewerData() {
         let input = this.viewer.getInputData();
         input.assessmentList = this.viewer.selector.getInputData();
@@ -69,7 +86,8 @@ export class EmployeeWorkspaceComponent {
         let input = this.viewer.getInputData();
         input.assessmentList = this.viewer.selector.getInputData();
         this.model.update(this.currentEmployeeId, input, () => {
-            this.updateList();
+            // this.updateList();
+            this.updateCurrentEmployee();
             webix.message({
                 text: "Данные успешно обновлены",
                 type: "success",

@@ -7,12 +7,13 @@ module:testrunner
 # module:jobs
 
 
-GET     /                                       Application.Index
-POST    /login                                  Application.Login
-GET     /logout                                 Application.Logout
-GET     /register                               Application.Register
-POST    /register                               Application.SaveUser
-GET     /manager                                Manager.Index
+GET     /                                       LoginController.Index
+POST    /login                                  LoginController.Login
+GET     /logout                                 LoginController.Logout
+GET     /register                               LoginController.Register
+POST    /register                               LoginController.SaveUser
+
+GET     /manager                                ApplicationController.Index
 
 GET     /candidate                              CandidateController.Get
 GET     /candidate/:id                          CandidateController.GetById

@@ -20,6 +20,7 @@ export class CandidateViewerComponent {
     }
 
     view(candidate) {
+        this.personalForm.clearValidation();
         this.personalForm.setValues({
             firstName: candidate.firstName,
             middleName: candidate.middleName,
@@ -41,6 +42,7 @@ export class CandidateViewerComponent {
 
     clear() {
         this.personalForm.clear();
+        this.personalForm.clearValidation();
         this.selector.clear();
     }
 
@@ -52,13 +54,31 @@ export class CandidateViewerComponent {
         let personalInfoForm = {
             id:"candidatePersonalInfoForm",
             view: "form",
+            rules:{
+                "lastName":webix.rules.isNotEmpty,
+                "firstName":webix.rules.isNotEmpty,
+                "phone":webix.rules.isNotEmpty,
+                "email":webix.rules.isEmail,
+            },
             elements: [{cols:[
                 {
                     rows:
                     [
-                        {name:"firstName", label: "Имя", labelPosition: "top", view:"text",},
+                        {
+                            name:"firstName", 
+                            label: "Имя", 
+                            labelPosition: "top", 
+                            view:"text",
+                            invalidMessage: "Не может быть пустым",
+                        },
                         {name:"middleName", label: "Отчество", labelPosition: "top", view:"text",},
-                        {name:"lastName", label: "Фамилия", labelPosition: "top", view: "text",},
+                        {
+                            name:"lastName", 
+                            label: "Фамилия", 
+                            labelPosition: "top", 
+                            view: "text",
+                            invalidMessage: "Не может быть пустым",
+                        },
                         {
                             name: "birthDate",
                             label: "Дата рождения",
@@ -68,8 +88,21 @@ export class CandidateViewerComponent {
                     ]
                 },
                 {rows:[
-                    {name:"email", label: "Email", labelPosition: "top", view:"text",},
-                    {name:"phone", label: "Телефон", labelPosition: "top", view:"text",},
+                    {
+                        name:"email", 
+                        label: "Email", 
+                        labelPosition: "top", 
+                        view:"text",
+                        invalidMessage: "Неверный формат",
+                    },
+                    {
+                        name:"phone", 
+                        label: "Телефон", 
+                        labelPosition: "top", 
+                        view:"text",
+                        pattern: webix.patterns.phone,
+                        invalidMessage: "Неверный формат",
+                    },
                     {},
             ],
             },
@@ -100,9 +133,9 @@ export class CandidateViewerComponent {
                 {
                     view: "toolbar",
                     elements: [
+                        {view:"label", label:"Информация о кандидате", align:"center"},
                         {id: "candidateConfirmButton", view:"button", type:"icon", icon:"wxi-check", autowidth:true},
                         {id: "candidateDeleteButton", view:"button", type:"icon", icon:"wxi-trash", autowidth:true},
-                        {view:"label", label:"Информация о кандидате", align:"center"},
                     ] 
                 },
                 {
@@ -120,12 +153,17 @@ export class CandidateViewerComponent {
 
 function getCandidateConfirmClickHandler(workspace) {
     let handler = function () {
-        if (workspace.viewer.mode === "view") {
-            workspace.changeViewerMode("view");
-            workspace.updateFromViewerData();
-        } else if (workspace.viewer.mode === "create") {
-            workspace.changeViewerMode("view");
-            workspace.createFromViewerData();
+        if (workspace.viewer.personalForm.validate())
+        {
+            if (workspace.viewer.mode === "view") {
+                workspace.changeViewerMode("view");
+                workspace.updateFromViewerData();
+            } else if (workspace.viewer.mode === "create") {
+                workspace.changeViewerMode("view");
+                workspace.createFromViewerData();
+            }
+        } else {
+            webix.message({type:"error", text:"Ошибка при вводе данных"});
         }
     }
     return handler;

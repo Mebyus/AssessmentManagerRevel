@@ -51,6 +51,11 @@ export class AssessmentSelectorComponent {
 
     setList(data) {
         this.list.clearAll();
+        if (data) {
+            data.forEach(element => {
+                element.value = new Date(element.dateTime).toLocaleString("ru-Ru");
+            });
+        }
         this.list.parse(data);
         this.list.refresh();
     }
@@ -64,9 +69,11 @@ export class AssessmentSelectorComponent {
 
     setOptions(data) {
         this.data = data;
-        data.forEach(element => {
-            element.value = element.dateTime;
-        });
+        if (data) {
+            data.forEach(element => {
+                element.value = new Date(element.dateTime).toLocaleString("ru-Ru");
+            });
+        }
         this.richselect.define("options", data);
         this.richselect.setValue("");
     }
@@ -84,7 +91,7 @@ export class AssessmentSelectorComponent {
                 id: "EmployeeAssessmentList",
                 view: "list",
                 gravity: 1,
-                template: "#dateTime#",
+                template: "#value#",
                 select: true,
                 data: [],
             },
@@ -146,7 +153,7 @@ function getDeleteHandler(workspace) {
 function getNewHandler(workspace) {
     let handler = function() {
         workspace.activateNewMode();
-        workspace.newId = workspace.list.add({dateTime:"Выберите дату..."});
+        workspace.newId = workspace.list.add({value:"Выберите дату..."});
         workspace.list.select(workspace.newId);
         workspace.selectedId = "";
         workspace.richselect.setValue("");
@@ -162,6 +169,7 @@ function getRichSelectChangeHandler(workspace) {
             let assessment = workspace.data.find(value => value.id === newValue);
             if (item && assessment) {
                 item.dateTime = assessment.dateTime;
+                item.value = assessment.value;
                 item.assessmentId = parseInt(assessment.id);
                 item.employeeId = parseInt(workspace.currentEmployeeId);
                 workspace.list.refresh();

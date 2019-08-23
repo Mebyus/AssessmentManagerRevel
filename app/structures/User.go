@@ -20,6 +20,7 @@ func (u *User) String() string {
 
 var userRegex = regexp.MustCompile("^\\w*$")
 
+// Валидация данных пользователя при запросе на регистрацию
 func (user *User) Validate(v *revel.Validation) {
 	v.Check(user.Username,
 		revel.Required{},
@@ -36,6 +37,8 @@ func (user *User) Validate(v *revel.Validation) {
 	)
 }
 
+
+// Валидация пароля при запросе на регистрацию
 func ValidatePassword(v *revel.Validation, password string) *revel.ValidationResult {
 	return v.Check(password,
 		revel.Required{},

@@ -68,7 +68,7 @@ export class AssessmentRequester {
             },
             body: JSON.stringify(assessment),
         };
-
+        
         fetch(url, options)
         .then(resp => resp.json())
         .then(result => callAfterResponse(result));

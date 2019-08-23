@@ -3,3 +3,4 @@ tmp/
 routes/
 public/webix
 logs/
+docs/routes.csv

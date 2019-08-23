@@ -72,6 +72,8 @@ export class SelectBoxComponent {
         this.getDataElementUI = getDataElementUI;
         this.isSelectable = isSelectable;
         this.selectedId = "";
+        this.oldSelectedId = "";
+        this.selectedElement = null;
         this.selectedItem = null;
         this.getCardClickHandler = getCardClickHandler;
     }
@@ -94,18 +96,31 @@ export class SelectBoxComponent {
     }
 
     setSelection(cardId, item) {
+        this.selectedItem = null;
+        this.selectedElement = null;
+
         if (cardId !== this.selectedId) {
-            this.selectedItem = null;
             let oldCard = $$(this.selectedId);
             let newCard = $$(cardId);
             if (oldCard) {
-                oldCard.getNode().style.background = "white";
+                webix.html.removeCss(oldCard.getNode(), "selectBoxCardSelected");
+                webix.html.addCss(oldCard.getNode(), "selectBoxCard")
             }
             if (newCard) {
-                newCard.getNode().style.background = "#A2F5FC";
+                webix.html.removeCss(newCard.getNode(), "selectBoxCard");
+                webix.html.addCss(newCard.getNode(), "selectBoxCardSelected")
                 this.selectedItem = item;
+                this.selectedElement = newCard;
             }
+            this.oldSelectedId = this.selectedId;
             this.selectedId = cardId;
+        } else {
+            let oldCard = $$(this.selectedId);
+            if (oldCard) {
+                webix.html.removeCss(oldCard.getNode(), "selectBoxCardSelected");
+                webix.html.addCss(oldCard.getNode(), "selectBoxCard")
+            }
+            this.selectedId = "";
         }
     }
 
@@ -116,7 +131,7 @@ export class SelectBoxComponent {
 
         if (this.isSelectable) {
             newCard.getNode().addEventListener('click', 
-                this.getCardClickHandler(this, newCardId, item));
+                this.getCardClickHandler(this, newCardId, item), false);
         }
     }
 
@@ -126,6 +141,7 @@ export class SelectBoxComponent {
 
     reset(data) {
         this.selectedId = "";
+        this.selectedElement = null;
         this.selectedItem = null;
         this.data = data;
         this.box.reset(data);
@@ -156,8 +172,7 @@ export class SelectBoxComponent {
 function getSelectChangeHandler(boxComponent) {
     let handler = function(newValue, oldValue) {
         if (newValue) {
-            boxComponent.header.setValue(0);
-
+            boxComponent.header.setValue("");
             let selectedId = newValue;
             let item = boxComponent.data.find(value => value.id === selectedId);
             boxComponent.addCard(item);
@@ -181,9 +196,12 @@ function getUnselectClickHandler(boxComponent, item) {
 export function getEmployeeCardConfig(boxComponent, employee) {
     let card = {
         view: "toolbar",
-        borderless: false,
+        css: "selectBoxCard",
         elements: [
-            {view: "label", label: employee.lastName + " " + employee.firstName},
+            {
+                view: "label", 
+                label: employee.lastName + " " + employee.firstName,
+            },
             {
                 view: "button", type:"icon", icon:"wxi-close", autowidth:true, 
                 click: getUnselectClickHandler(boxComponent, employee),
@@ -196,6 +214,7 @@ export function getEmployeeCardConfig(boxComponent, employee) {
 export function getCandidateCardConfig(boxComponent, candidate) {
     let card = {
         view: "toolbar",
+        css: "selectBoxCard",
         elements: [
             {view: "label", label: candidate.lastName + " " + candidate.firstName},
             {

@@ -8,42 +8,47 @@ import (
 	"fmt"
 )
 
-type Application struct {
+type LoginController struct {
 	*revel.Controller
 	provider *providers.UserProvider
 }
 
-func (app Application) Index() revel.Result {
+func (app LoginController) Index() revel.Result {
 	if app.connected() != nil {
-		return app.Redirect(Manager.Index)
+		return app.Redirect(ApplicationController.Index)
 	}
 
-	app.Flash.Error("Please log in first")
 	return app.Render()
 }
 
-func (app Application) connected() *structures.User {
-	if app.ViewArgs["user"] != nil {
-		return app.ViewArgs["user"].(*structures.User)
-	}
+
+// Проверяет является ли сессия авторизованной
+func (app LoginController) connected() *structures.User {
+	//if app.ViewArgs["user"] != nil {
+	//	fmt.Println("Found user in template args")
+	//	return app.ViewArgs["user"].(*structures.User)
+	//}
 	if username, ok := app.Session["user"]; ok {
 		return app.getUser(username.(string))
 	}
 	return nil
 }
 
-func (app Application) AddUser() revel.Result {
-	if user := app.connected(); user != nil {
-		app.ViewArgs["user"] = user
-	}
-	return nil
-}
+//func (app LoginController) AddUser() revel.Result {
+//	fmt.Println("Trying to add user")
+//	if user := app.connected(); user != nil {
+//		fmt.Println("User added to template args")
+//		app.ViewArgs["user"] = user
+//	}
+//	return nil
+//}
 
-func (app Application) Register() revel.Result {
+func (app LoginController) Register() revel.Result {
 	return app.Render()
 }
 
-func (app Application) SaveUser(user structures.User, verifyPassword string) revel.Result {
+// Сохраняет пользователя в БД
+func (app LoginController) SaveUser(user structures.User, verifyPassword string) revel.Result {
 	app.Validation.Required(verifyPassword)
 	app.Validation.Required(verifyPassword == user.Password).MessageKey("Password does not match")
 	user.Validate(app.Validation)
@@ -51,7 +56,7 @@ func (app Application) SaveUser(user structures.User, verifyPassword string) rev
 	if app.Validation.HasErrors() {
 		app.Validation.Keep()
 		app.FlashParams()
-		return app.Redirect(Application.Register)
+		return app.Redirect(LoginController.Register)
 	}
 
 	user.HashedPassword, _ = bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -74,12 +79,11 @@ func (app Application) SaveUser(user structures.User, verifyPassword string) rev
 	}
 
 	app.Session["user"] = user.Username
-	app.Flash.Success("Welcome, " + user.Name)
-	return app.Redirect(Manager.Index)
+	return app.Redirect(ApplicationController.Index)
 }
 
-// Запрос данных пользователя, если такой существует
-func (app Application) getUser(username string) (*structures.User) {
+// Поиск пользователя в БД
+func (app LoginController) getUser(username string) (*structures.User) {
 	app.provider = &providers.UserProvider{}
 	err := app.provider.Init()
 	if err != nil {
@@ -98,12 +102,11 @@ func (app Application) getUser(username string) (*structures.User) {
 		return nil
 	}
 
-	app.Session["fulluser"] = user
 	return user
 }
 
 // Обработка запроса POST /login
-func (app Application) Login(username, password string, remember bool) revel.Result {
+func (app LoginController) Login(username, password string, remember bool) revel.Result {
 	user := app.getUser(username)
 	if user != nil {
 		err := bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(password))
@@ -115,18 +118,16 @@ func (app Application) Login(username, password string, remember bool) revel.Res
 				app.Session.SetNoExpiration()
 			}
 			app.Flash.Success("Welcome, " + username)
-			return app.Redirect(Manager.Index)
+			return app.Redirect(ApplicationController.Index)
 		}
 	}
 
-	app.Flash.Out["username"] = username
-	app.Flash.Error("Login failed")
-	return app.Redirect(Application.Index)
+	return app.Redirect(LoginController.Index)
 }
 
-func (app Application) Logout() revel.Result {
+func (app LoginController) Logout() revel.Result {
 	for k := range app.Session {
 		delete(app.Session, k)
 	}
-	return app.Redirect(Application.Index)
+	return app.Redirect(LoginController.Index)
 }

@@ -3,7 +3,7 @@
 
 <h1>Register:</h1>
 
-<form action="{{ url "Application.SaveUser" }}" method="POST">
+<form action="{{ url "LoginController.SaveUser" }}" method="POST">
   {{with $field := field "user.Username" .}}
     <p class="{{ $field.ErrorClass }}">
       <strong>Username:</strong>
@@ -30,7 +30,7 @@
     </p>
   {{ end }}
   <p class="buttons">
-    <input type="submit" value="Register"> <a href="{{ url "Application.Index" }}">Cancel</a>
+    <input type="submit" value="Register"> <a href="{{ url "LoginController.Index" }}">Cancel</a>
   </p>
 </form>
 

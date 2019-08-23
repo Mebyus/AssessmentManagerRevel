@@ -12,15 +12,27 @@ export class AssessmentPickerComponent {
         this.newButton = $$("newAssessmentButton");
         this.newButton.attachEvent("onItemClick", getNewAssessmentClickHandler(this.workspace));
 
+        this.syncButton = $$("AssessmentSyncButton");
+        this.syncButton.attachEvent("onItemClick", getSyncButtonClickHandler(this.workspace));
+
         this.listInput = $$("AssessmentListInput");
         this.listInput.attachEvent("onChange", getSearchChangeHandler(this.workspace));
-        this.listInput.getPopup().attachEvent("onView");
     }
 
     set(assessments) {
+        this.scrollState = this.table.getScrollState();
         this.table.clearAll();
+        if (assessments) {
+            assessments.forEach(element => {
+                element.value = new Date(element.dateTime);
+            });
+        }
         this.table.parse(assessments);
-        this.table.sort("dateTime");
+        this.table.sort("value", "asc", "date");
+        if (this.table.exists(this.workspace.currentAssessmentId)) {
+            this.table.select(this.workspace.currentAssessmentId);
+        }
+        this.table.scrollTo(this.scrollState.x, this.scrollState.y);
         this.table.refresh();
     }
 
@@ -50,14 +62,15 @@ export class AssessmentPickerComponent {
             id: "assessmentTable",
             view: "datatable",
             columns: [
-                {id: "dateTime", header:"Дата", fillspace:true, 
-                    format:function(strDate){
-                        if (strDate) {
-                            return new Date(strDate).toLocaleString('ru-RU');
+                {id: "value", header:"Дата", sort:"date", fillspace:true, 
+                    format:function(date){
+                        if (date) {
+                            return date.toLocaleString('ru-RU');
                         }
                         return "";
                     }
                 },
+                // {id: "sortTime", header:"ms", fillspace:true,},
             ],
             select: true,
             data: [],
@@ -98,7 +111,16 @@ function getSearchChangeHandler(workspace) {
                 end: newValue.end.toJSON(),
             };
             workspace.search(dateRange);
+        } else {
+            workspace.updateList();
         }
+    }
+    return handler;
+}
+
+function getSyncButtonClickHandler(workspace) {
+    let handler = function() {
+        workspace.update();
     }
     return handler;
 }
@@ -113,7 +135,9 @@ function getAssessmentSelectChangeHandler(workspace) {
                     workspace.picker.table.remove(workspace.picker.newId);
                     workspace.picker.newId = "";
                 }
-                workspace.viewAssessment(item.id);
+                if (workspace.currentAssessmentId !== item.id) {
+                    workspace.viewAssessment(item.id);
+                }
                 workspace.picker.activateViewMode();    
             } 
         }

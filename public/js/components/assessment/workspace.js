@@ -29,7 +29,16 @@ export class AssessmentWorkspaceComponent {
     }
 
     updateList() {
-        this.model.getAll(assessments => this.picker.set.call(this.picker, assessments));
+        let searchValue = this.picker.listInput.getValue();
+        if (searchValue.start && searchValue.end) {
+            let dateRange = {
+                start: searchValue.start.toJSON(),
+                end: searchValue.end.toJSON(),
+            }
+            this.search(dateRange);
+        } else {
+            this.model.getAll(assessments => this.picker.set.call(this.picker, assessments));
+        }
     }
 
     viewAssessment(id) {
@@ -72,6 +81,37 @@ export class AssessmentWorkspaceComponent {
         }
     }
 
+    updateCurrent() {
+        if (this.picker.table.exists(this.currentAssessmentId)) {
+            let allCandidatePromise = this.model.getAllCandidatePromise(candidates => {
+                candidates.forEach(element => {
+                    element.comment = "";
+                    element.isConfirmed = "null";
+                    element.result = 0;
+                });
+                this.viewer.setCandidateOptions(candidates);
+            });
+
+            let allEmployeePromise = this.model.getAllEmployeePromise(employees => {
+                this.viewer.setEmployeeOptions(employees);
+            });
+            let tableIndex = this.picker.table.getIndexById(this.currentAssessmentId);
+            this.model.get(this.currentAssessmentId, assessment => {
+                this.picker.table.remove(this.currentAssessmentId);
+                assessment.value = new Date(assessment.dateTime);
+                let newId = this.picker.table.add(assessment, tableIndex);
+                this.viewer.view(assessment);
+                this.picker.table.select(newId);
+                this.currentAssessmentId = newId;
+                allCandidatePromise.then(canidateResult => {
+                    allEmployeePromise.then(employeeResult => {
+                        this.viewer.view.call(this.viewer, assessment);
+                    });
+                });
+            });
+        }
+    }
+
     createFromViewerData() {
         let input = this.viewer.getInputData();
         this.model.add(input, () => this.updateList());
@@ -79,7 +119,15 @@ export class AssessmentWorkspaceComponent {
 
     updateFromViewerData() {
         let input = this.viewer.getInputData();
-        this.model.update(this.currentAssessmentId, input, () => this.updateList());
+        this.model.update(this.currentAssessmentId, input, () => {
+            // this.updateList();
+            this.updateCurrent();
+            webix.message({
+                text: "Данные успешно обновлены",
+                type: "success",
+                expire: 2000,
+            });
+        });
     }
 
     changeViewerMode(mode) {

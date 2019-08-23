@@ -232,6 +232,7 @@ func (mapper *AssessmentMapper) CreateAssessmentCandidate(assessmentId string, a
 		query := "INSERT INTO candidate_for_assessment(assessment, candidate, is_confirmed, result, comment) VALUES " +
 			assessment.CandidateListStr() +
 			" ON CONFLICT DO NOTHING;"
+		fmt.Println(query)
 		_, err := mapper.connection.Exec(query)
 		if err != nil {
 			return fmt.Errorf("Добавление кандидатов на собеседование %s в БД:", assessmentId, err)

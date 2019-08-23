@@ -20,6 +20,7 @@ export class EmployeeViewerComponent {
     }
 
     view(employee) {
+        this.personalForm.clearValidation();
         this.personalForm.setValues({
             firstName: employee.firstName,
             middleName: employee.middleName,
@@ -38,6 +39,7 @@ export class EmployeeViewerComponent {
 
     clear() {
         this.personalForm.clear();
+        this.personalForm.clearValidation();
         this.selector.clear();
     }
 
@@ -59,6 +61,10 @@ export class EmployeeViewerComponent {
         let personalInfoForm = {
             id: "employeePersonalInfoForm",
             view: "form",
+            rules:{
+                "lastName":webix.rules.isNotEmpty,
+                "firstName":webix.rules.isNotEmpty,
+            },
             elements: [{cols:[
                 {
                     rows:
@@ -103,12 +109,16 @@ export class EmployeeViewerComponent {
 
 function getEmployeeConfirmClickHandler(workspace) {
     let handler = function () {
-        if (workspace.viewer.mode === "view") {
-            workspace.changeViewerMode("view");
-            workspace.updateFromViewerData();
-        } else if (workspace.viewer.mode === "create") {
-            workspace.changeViewerMode("view");
-            workspace.createFromViewerData();
+        if (workspace.viewer.personalForm.validate()) {
+            if (workspace.viewer.mode === "view") {
+                workspace.changeViewerMode("view");
+                workspace.updateFromViewerData();
+            } else if (workspace.viewer.mode === "create") {
+                workspace.changeViewerMode("view");
+                workspace.createFromViewerData();
+            }
+        } else {
+            webix.message({type:"error", text:"Ошибка при вводе данных"});
         }
     }
     return handler;

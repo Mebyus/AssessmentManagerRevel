@@ -64,6 +64,18 @@ export class CandidateWorkspaceComponent {
         }
     }
 
+    updateCurrentCandidate() {
+        if (this.picker.table.exists(this.currentCandidateId)) {
+            let tableIndex = this.picker.table.getIndexById(this.currentCandidateId);
+            this.model.get(this.currentCandidateId, candidate => {
+                this.picker.table.remove(this.currentCandidateId);
+                let newId = this.picker.table.add(candidate, tableIndex);
+                this.picker.table.select(newId);
+                this.currentCandidateId = newId;
+            });
+        }
+    }
+
     createFromViewerData() {
         let input = this.viewer.getInputData();
         input.assessmentList = this.viewer.selector.getInputData();
@@ -74,7 +86,8 @@ export class CandidateWorkspaceComponent {
         let input = this.viewer.getInputData();
         input.assessmentList = this.viewer.selector.getInputData();
         this.model.update(this.currentCandidateId, input, () => {
-            this.updateList();
+            // this.updateList();
+            this.updateCurrentCandidate();
             webix.message({
                 text: "Данные успешно обновлены",
                 type: "success",

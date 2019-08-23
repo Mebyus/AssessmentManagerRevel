@@ -65,8 +65,19 @@ export class AssessmentViewerComponent {
     }
 
     setCandidateResult(candidate) {
+        let isConfirmed;
+        switch (candidate.isConfirmed) {
+            case "true":
+                isConfirmed = "1";
+                break;
+            case "false":
+                isConfirmed = "2";
+                break;
+            default:
+                isConfirmed = "0";
+        }
         this.resultForm.setValues({
-            isConfirmed: 0,
+            isConfirmed: isConfirmed,
             result: candidate.result,
             comment: candidate.comment,
         });
@@ -153,8 +164,8 @@ export class AssessmentViewerComponent {
             view: "toolbar",
             elements: [
                 {view:"label", label:"Информация о собеседовании", align:"center"},
-                {id: "assessmentConfirmButton", view:"button", value:"Подтвердить"},
-                {id: "assessmentDeleteButton", view:"button", value:"Удалить"},
+                {id: "assessmentConfirmButton", view:"button", type:"icon", icon:"wxi-check", autowidth:true},
+                {id: "assessmentDeleteButton", view:"button", type:"icon", icon:"wxi-trash", autowidth:true},
             ],
         }
 
@@ -249,10 +260,22 @@ export class AssessmentViewerComponent {
     }
 }
 
+function parseConfirm(value) {
+    switch (value) {
+        case "1":
+            return "true";
+        case "2":
+            return "false";
+        default:
+            return "null";
+    }
+}
+
 function getCandidateCardClickHandler(boxComponent, cardId, item) {
-    let handler = function() {
+    let handler = function(event) {
         let resultInput = boxComponent.workspace.resultForm.getValues();
         if (boxComponent.selectedItem) {
+            boxComponent.selectedItem.isConfirmed = parseConfirm(resultInput.isConfirmed);
             boxComponent.selectedItem.result = parseInt(resultInput.result);
             boxComponent.selectedItem.comment = resultInput.comment;
         }
