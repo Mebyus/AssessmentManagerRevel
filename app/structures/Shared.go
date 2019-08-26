@@ -31,6 +31,8 @@ type CandidateForAssessment struct {
 
 var escapeSQLRegex = regexp.MustCompile("[\"'\\\\%_`]")
 
+// escapeSQL Возвращает новую строку, где заменены служебные символы SQL в строке str
+// на их escape-sequence в формате POSIX.
 func escapeSQL(str string) (string) {
 	return "E'" + escapeSQLRegex.ReplaceAllStringFunc(str, func(char string) string {
 		return "\\" + char

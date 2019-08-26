@@ -1,3 +1,7 @@
+/**
+ * Класс для отображения и управления интерфейсом выбора собеседований
+ * во вкладке кандидатов.
+ */
 export class AssessmentSelectorComponent {
     constructor(workspace) {
         this.workspace = workspace;
@@ -22,6 +26,9 @@ export class AssessmentSelectorComponent {
         this.activateEmptyMode();
     }
 
+    /**
+     * Очищает интерфейс выбора собеседований.
+     */
     clear() {
         this.richselect.setValue("");
         this.list.clearAll();
@@ -48,6 +55,10 @@ export class AssessmentSelectorComponent {
         this.deleteButton.enable();
     }
 
+    /**
+     * Устанавливает список собеседований кандидата из аргумента data
+     * @param {Array} data Массив с данными собеседований.
+     */
     setList(data) {
         this.list.clearAll();
         if (data) {
@@ -59,6 +70,9 @@ export class AssessmentSelectorComponent {
         this.list.refresh();
     }
 
+    /**
+     * Возвращает данные собеседований из формы.
+     */
     getInputData() {
         if (this.mode === "new") {
             this.list.remove(this.newId);
@@ -66,6 +80,10 @@ export class AssessmentSelectorComponent {
         return this.list.serialize();
     }
 
+    /**
+     * Задает возможные варианты выбора новых собеседований.
+     * @param {Array} data 
+     */
     setOptions(data) {
         this.data = data;
         if (data) {

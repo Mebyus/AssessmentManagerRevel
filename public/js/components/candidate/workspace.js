@@ -2,6 +2,9 @@ import {CandidatePickerComponent} from "./picker.js";
 import {CandidateViewerComponent} from "./viewer.js";
 import {CandidateRequester} from "./../../models/candidates/requester.js";
 
+/**
+ * Класс для отображения и управления интерфейсом во вкладке кандидатов.
+ */
 export class CandidateWorkspaceComponent {
     constructor(url) {
         this.picker = new CandidatePickerComponent(this);
@@ -19,15 +22,25 @@ export class CandidateWorkspaceComponent {
         this.updateList();
     }
 
+    /**
+     * Обновляет список сотрудников и текущего выбранного кандидата.
+     */
     update() {
         this.updateList();
         this.viewCandidate(this.currentCandidateId);
     }
 
+    /**
+     * Поиск кандидатов и отображение результата в таблице.
+     * @param {string} searchString Строка для поиска.
+     */
     search(searchString) {
         this.model.search(searchString, (candidates => this.picker.set.call(this.picker, candidates)));
     }
 
+    /**
+     * Обновляет содержимое списка кандидатов
+     */
     updateList() {
         let searchString = this.picker.listInput.getValue();
         if (searchString) {
@@ -37,6 +50,10 @@ export class CandidateWorkspaceComponent {
         }
     }
 
+    /**
+     * Просмотр данных кандидата во viewer.
+     * @param {string} id ID кандидата.
+     */
     viewCandidate(id) {
         this.currentCandidateId = id;
         this.viewer.selector.currentCandidateId = id;
@@ -50,6 +67,9 @@ export class CandidateWorkspaceComponent {
         this.viewer.clear();
     }
 
+    /**
+     * Удаляет текущего выбранного кандидата.
+     */
     deleteCurrentCandidate() {
         if (this.currentCandidateId) {
             this.model.delete(this.currentCandidateId, () => {
@@ -64,6 +84,9 @@ export class CandidateWorkspaceComponent {
         }
     }
 
+    /**
+     * Обновляет отображение данных текущего кандидата.
+     */
     updateCurrentCandidate() {
         if (this.picker.table.exists(this.currentCandidateId)) {
             let tableIndex = this.picker.table.getIndexById(this.currentCandidateId);
@@ -72,16 +95,23 @@ export class CandidateWorkspaceComponent {
                 let newId = this.picker.table.add(candidate, tableIndex);
                 this.picker.table.select(newId);
                 this.currentCandidateId = newId;
+                this.viewer.view(candidate);
             });
         }
     }
 
+     /**
+     * Создает кандидата по данным из формы.
+     */
     createFromViewerData() {
         let input = this.viewer.getInputData();
         input.assessmentList = this.viewer.selector.getInputData();
         this.model.add(input, () => this.updateList());
     }
 
+    /**
+     * Сохраняет изменения данных кандидата из формы.
+     */
     updateFromViewerData() {
         let input = this.viewer.getInputData();
         input.assessmentList = this.viewer.selector.getInputData();

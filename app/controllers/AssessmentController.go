@@ -10,7 +10,7 @@ import (
 )
 
 type AssessmentController struct {
-	*revel.Controller
+	ApplicationController
 	provider *providers.AssessmentProvider
 }
 

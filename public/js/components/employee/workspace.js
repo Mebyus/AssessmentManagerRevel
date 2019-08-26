@@ -2,6 +2,9 @@ import {EmployeePickerComponent} from "./picker.js";
 import {EmployeeViewerComponent} from "./viewer.js";
 import {EmployeeRequester} from "./../../models/employees/requester.js";
 
+/**
+ * Класс для отображения и управления интерфейсом во вкладке сотрудников.
+ */
 export class EmployeeWorkspaceComponent {
     constructor(url) {
         this.picker = new EmployeePickerComponent(this);
@@ -19,15 +22,25 @@ export class EmployeeWorkspaceComponent {
         this.updateList();
     }
 
+    /**
+     * Обновляет список сотрудников и текущего выбранного сотрудника
+     */
     update() {
         this.updateList();
         this.viewEmployee(this.currentEmployeeId);
     }
 
+    /**
+     * Поиск сотрудников и отображение результата в таблице.
+     * @param {string} searchString Строка для поиска.
+     */
     search(searchString) {
         this.model.search(searchString, (employees => this.picker.set.call(this.picker, employees)));
     }
 
+    /**
+     * Обновляет содержимое списка сотрудников
+     */
     updateList() {
         let searchString = this.picker.listInput.getValue();
         if (searchString) {
@@ -37,6 +50,10 @@ export class EmployeeWorkspaceComponent {
         }
     }
 
+    /**
+     * Просмотр данных сотрудника во viewer.
+     * @param {string} id ID сотрудника
+     */
     viewEmployee(id) {
         this.currentEmployeeId = id;
         this.viewer.selector.currentEmployeeId = id;
@@ -50,6 +67,9 @@ export class EmployeeWorkspaceComponent {
         this.viewer.clear();
     }
 
+    /**
+     * Удаляет текущего выбранного сотрудника.
+     */
     deleteCurrentEmployee() {
         if (this.currentEmployeeId) {
             this.model.delete(this.currentEmployeeId, () => {
@@ -64,6 +84,9 @@ export class EmployeeWorkspaceComponent {
         }
     }
 
+    /**
+     * Обновляет отображение данных текущего сотрудника.
+     */
     updateCurrentEmployee() {
         if (this.picker.table.exists(this.currentEmployeeId)) {
             let tableIndex = this.picker.table.getIndexById(this.currentEmployeeId);
@@ -72,16 +95,23 @@ export class EmployeeWorkspaceComponent {
                 let newId = this.picker.table.add(employee, tableIndex);
                 this.picker.table.select(newId);
                 this.currentEmployeeId = newId;
+                this.viewer.view(employee);
             });
         }
     }
 
+    /**
+     * Создает сотрудника по данным из формы.
+     */
     createFromViewerData() {
         let input = this.viewer.getInputData();
         input.assessmentList = this.viewer.selector.getInputData();
         this.model.add(input, () => this.updateList());
     }
 
+    /**
+     * Сохраняет изменения данных сотрудника из формы.
+     */
     updateFromViewerData() {
         let input = this.viewer.getInputData();
         input.assessmentList = this.viewer.selector.getInputData();

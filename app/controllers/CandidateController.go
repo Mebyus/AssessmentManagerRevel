@@ -10,7 +10,7 @@ import (
 
 // Контроллер принимающий запросы от вкладки кандидатов
 type CandidateController struct {
-	*revel.Controller
+	ApplicationController
 	provider *providers.CandidateProvider
 }
 

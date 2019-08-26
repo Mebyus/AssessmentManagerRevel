@@ -9,7 +9,7 @@ import (
 )
 
 type EmployeeController struct {
-	*revel.Controller
+	ApplicationController
 	provider *providers.EmployeeProvider
 }
 

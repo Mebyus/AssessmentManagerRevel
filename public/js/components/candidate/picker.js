@@ -1,3 +1,6 @@
+/**
+ * Класс для отображения и управления списка кандидатов.
+ */
 export class CandidatePickerComponent {
     constructor(workspace) {
         this.workspace = workspace;

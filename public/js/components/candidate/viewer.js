@@ -1,5 +1,8 @@
 import {AssessmentSelectorComponent} from "./assessmentselector.js";
 
+/**
+ * Класс для отображения и управления интерфейсом редактирования кандидата
+ */
 export class CandidateViewerComponent {
     constructor(workspace) {
         this.workspace = workspace;
@@ -19,6 +22,10 @@ export class CandidateViewerComponent {
         this.deleteButton.attachEvent("onItemClick", getCandidateDeleteClickHandler(this.workspace));
     }
 
+    /**
+     * Просмотр данных кандидата.
+     * @param {object} candidate Данные кандидата
+     */
     view(candidate) {
         this.personalForm.clearValidation();
         this.personalForm.setValues({
@@ -40,12 +47,18 @@ export class CandidateViewerComponent {
         this.deleteButton.disable();
     }
 
+    /**
+     * Очищает интерфейс.
+     */
     clear() {
         this.personalForm.clear();
         this.personalForm.clearValidation();
         this.selector.clear();
     }
 
+    /**
+     * Получение текущих данных из интерфейса в виде объекта.
+     */
     getInputData() {
         return this.personalForm.getValues();
     }

@@ -1,5 +1,8 @@
 import {encodeQueryData} from "./../query.js";
 
+/**
+ * Класс для запроса данных кандидатов.
+ */
 export class CandidateRequester {
     constructor(url) {
         this.url = url;
@@ -14,6 +17,12 @@ export class CandidateRequester {
         return fetch(url, options).then(resp => resp.json()).then(result => callAfterResponse(result));
     }
 
+    /**
+     * Запрос на поиск сотрудников.
+     * @param {string} searchString Строка для поиска.
+     * @param {CallableFunction} callAfterResponse Callback для вызова после того, как ответ 
+     * на запрос будет получен.
+     */
     search(searchString, callAfterResponse) {
         let params = {search: searchString};
         let url = this.url + "/candidate" + "?" + encodeQueryData(params);
@@ -23,6 +32,12 @@ export class CandidateRequester {
         .then(result => callAfterResponse(result));
     }
 
+    /**
+     * Запрос данных сотрудника по id.
+     * @param {string} id ID кандидата.
+     * @param {CallableFunction} callAfterResponse Callback для вызова после того, как ответ 
+     * на запрос будет получен. 
+     */
     get(id, callAfterResponse) {
         let url = this.url + "/candidate" + "/" + id;
         let options = {
@@ -34,6 +49,12 @@ export class CandidateRequester {
         .then(result => callAfterResponse(result));
     }
 
+    /**
+     * Запрос на создание нового сотрудника.
+     * @param {object} candidate Данные кандидата.
+     * @param {CallableFunction} callAfterResponse Callback для вызова после того, как ответ 
+     * на запрос будет получен.
+     */
     add(candidate, callAfterResponse) {
         let url = this.url + "/candidate";
         let options = {

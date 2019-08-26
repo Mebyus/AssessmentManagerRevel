@@ -120,6 +120,7 @@ export class SelectBoxComponent {
                 webix.html.removeCss(oldCard.getNode(), "selectBoxCardSelected");
                 webix.html.addCss(oldCard.getNode(), "selectBoxCard")
             }
+            this.oldSelectedId = this.selectedId;
             this.selectedId = "";
         }
     }
@@ -189,6 +190,12 @@ function getUnselectClickHandler(boxComponent, item) {
         element.getParentView().removeView(element);
         boxComponent.box.unselect(item);
         boxComponent.header.define("options", boxComponent.box.available);
+        if (boxComponent.selectedId === element.config.id) {
+            boxComponent.setSelection(boxComponent.oldSelectedId);
+            
+        } else if (boxComponent.oldSelectedId === element.config.id) {
+            boxComponent.workspace.resultForm.disable();
+        }
     }
     return handler;
 }
