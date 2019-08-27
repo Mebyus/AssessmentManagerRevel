@@ -1,31 +1,54 @@
-{{ set . "title" "Home" }}
-{{ template "header.html" .}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="/public/webix/codebase/webix.css" type="text/css">
+    <script src="/public/webix/codebase/webix.js" type="text/javascript"></script>
+</head>
+<body>
+<script>
+    let form = {
+        view:"form",
+        borderless:true,
+        elements: [
+            { view:"text", label:'Username', name:"username" },
+            { view:"text", type:"password", label:'Password', name:"password" },
+            { view:"button", value: "Submit", click:function(){
+                    let user = this.getParentView().getValues();
+                    let options = {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        body: "username=" + user.username +"&" + "password=" + user.password,
+                    };
+                    fetch("/login", options).then(resp => window.location = "/");
+                }},
+            {view:"button", value:"Register", click:() => location.href = "/register"}
+        ],
+        // rules:{
+        //     "email":webix.rules.isEmail,
+        //     "login":webix.rules.isNotEmpty
+        // },
+        elementsConfig:{
+            labelPosition:"top",
+        }
+    };
 
-<div id="login">
+    webix.ui({
+        view:"window",
+        id:"win2",
+        width:300,
+        position:"center",
+        modal:true,
+        head:"Login",
+        body:webix.copy(form)
+    });
 
-  <form action = "{{ url "LoginController.Login" }}" id="formLogin" method="POST">
-    <p class="field">
-      <label>Login Name:</label>
-      <input type="text" name="username" size="19" value=""/>
-    </p>
-    <p class="field">
-      <label>Password:</label>
-      <input type="password" name="password" size="19"/>
-    </p>
-    <p class="field">
-      <label>Remember:</label>
-      <input type="checkbox" name="remember" value="true"/>
-    </p>
-    <p class="buttons">
-      <input type="submit" value="Account login" />
-    </p>
-  </form>
-
-  <p>
-    <a href = "{{ url "LoginController.Register" }}">Register New User</a>
-  </p>
-
-</div>
-
-{{ template "flash.html" }}
-{{ template "footer.html" .}}
+    $$("win2").getBody().clear();
+    $$("win2").show();
+    $$("win2").getBody().focus();
+</script>
+</body>
+</html>

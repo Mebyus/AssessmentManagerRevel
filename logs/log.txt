@@ -177,3 +177,29 @@ INFO  2019/08/26 11:36:51    app     run.go:27: Running revel server
 INFO  2019/08/26 11:36:51    app revel_hooks.go:32: Go to /@tests to run the tests.          
 INFO  2019/08/26 11:36:53    app     run.go:27: Running revel server                     
 INFO  2019/08/26 11:36:53    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/27 11:20:53    app     run.go:27: Running revel server                     
+INFO  2019/08/27 11:20:53    app revel_hooks.go:32: Go to /@tests to run the tests.          
+ERROR 2019/08/27 11:56:01    app LoginController.go:118: Failed to find user                     method=POST path=/login ip=127.0.0.1 action=LoginController.Login namespace=App\\ user= error="Получение данных пользователя из БД:\n%!(EXTRA *errors.errorString=sql: no rows in result set)"  
+ERROR 2019/08/27 11:57:56    app LoginController.go:118: Failed to find user                      ip=127.0.0.1 method=POST action=LoginController.Login error="Получение данных пользователя из БД:\n%!(EXTRA *errors.errorString=sql: no rows in result set)" path=/login namespace=App\\ user=Руддщ 
+ERROR 2019/08/27 11:59:49    app LoginController.go:118: Failed to find user                     namespace=App\\ user= error="Получение данных пользователя из БД:\n%!(EXTRA *errors.errorString=sql: no rows in result set)"   ip=127.0.0.1 path=/login method=POST action=LoginController.Login
+ERROR 2019/08/27 12:00:37    app LoginController.go:118: Failed to find user                     method=POST error="Получение данных пользователя из БД:\n%!(EXTRA *errors.errorString=sql: no rows in result set)"  path=/login action=LoginController.Login namespace=App\\ user=grgrg  ip=127.0.0.1
+ERROR 2019/08/27 12:02:46    app LoginController.go:118: Failed to find user                      ip=127.0.0.1 method=POST action=LoginController.Login namespace=App\\ user= error="Получение данных пользователя из БД:\n%!(EXTRA *errors.errorString=sql: no rows in result set)"  path=/login
+INFO  2019/08/27 12:03:41    app     run.go:27: Running revel server                     
+INFO  2019/08/27 12:03:41    app revel_hooks.go:32: Go to /@tests to run the tests.          
+ERROR 2019/08/27 12:03:48    app LoginController.go:121: Failed to find user                      ip=127.0.0.1 path=/login method=POST namespace=App\\ user=  action=LoginController.Login error="Получение данных пользователя из БД:\n%!(EXTRA *errors.errorString=sql: no rows in result set)"
+ERROR 2019/08/27 12:04:22    app LoginController.go:121: Failed to find user                     action=LoginController.Login namespace=App\\ user=frfgre error="Получение данных пользователя из БД:\n%!(EXTRA *errors.errorString=sql: no rows in result set)"  ip=127.0.0.1  path=/login method=POST
+ERROR 2019/08/27 12:07:45    app LoginController.go:121: Failed to find user                      path=/login  namespace=App\\ user= error="Получение данных пользователя из БД:\n%!(EXTRA *errors.errorString=sql: no rows in result set)" ip=127.0.0.1 method=POST action=LoginController.Login
+ERROR 2019/08/27 12:09:31    app LoginController.go:121: Failed to find user                     error="Получение данных пользователя из БД:\n%!(EXTRA *errors.errorString=sql: no rows in result set)"  ip=127.0.0.1 namespace=App\\ user= path=/login method=POST action=LoginController.Login 
+ERROR 2019/08/27 12:10:33    app LoginController.go:121: Failed to find user                     action=LoginController.Login user=Helo error="Получение данных пользователя из БД:\n%!(EXTRA *errors.errorString=sql: no rows in result set)"   path=/login method=POST ip=127.0.0.1 namespace=App\\
+ERROR 2019/08/27 12:32:54    app LoginController.go:121: Failed to find user                     action=LoginController.Login user=рере error="Получение данных пользователя из БД:\n%!(EXTRA *errors.errorString=sql: no rows in result set)"   path=/login namespace=App\\ ip=127.0.0.1 method=POST
+INFO  2019/08/27 14:03:53    app     run.go:27: Running revel server                     
+INFO  2019/08/27 14:03:53    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/27 14:05:12    app     run.go:27: Running revel server                     
+INFO  2019/08/27 14:05:12    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/27 14:05:16    app     run.go:27: Running revel server                     
+INFO  2019/08/27 14:05:16    app revel_hooks.go:32: Go to /@tests to run the tests.          
+INFO  2019/08/27 14:21:30    app     run.go:27: Running revel server                     
+INFO  2019/08/27 14:21:30    app revel_hooks.go:32: Go to /@tests to run the tests.          
+ERROR 2019/08/27 14:33:40    app LoginController.go:31: Failed to find user                     action=LoginController.Register   ip=127.0.0.1 namespace=App\\ user=GGGGGG error="Получение данных пользователя из БД:\n%!(EXTRA *errors.errorString=sql: no rows in result set)" path=/register method=GET
+INFO  2019/08/27 14:57:55    app     run.go:27: Running revel server                     
+INFO  2019/08/27 14:57:55    app revel_hooks.go:32: Go to /@tests to run the tests.          

@@ -1,37 +1,60 @@
-{{ set . "title" "Register" }}
-{{ template "header.html" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="/public/webix/codebase/webix.css" type="text/css">
+    <script src="/public/webix/codebase/webix.js" type="text/javascript"></script>
+</head>
+<body>
+<script>
+    let form = {
+        view:"form",
+        borderless:true,
+        elements: [
+            { view:"text", label:'Username', name:"username" },
+            { view:"text", label:'Name', name:"name" },
+            { view:"text", type:"password", label:'Password', name:"password" },
+            { view:"text", type:"password", label:"Verify password", name:"verifyPassword" },
+            { view:"button", value: "Submit", click:function(){
+                    let user = this.getParentView().getValues();
+                    let options = {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                        },
+                        body: "user.Username=" + user.username +"&" +
+                            "user.Name=" + user.name + "&" +
+                            "user.Password=" + user.password + "&" +
+                            "verifyPassword=" + user.verifyPassword,
+                    };
+                    fetch("/register", options).then(resp => window.location = "/register/");
+                }},
+            // {view:"template", template:'<a href="/">Back to login</a>', height:30, align:"center"}
+            {view:"button", value:"Back to login", click:() => location.href = "/"}
+        ],
+        // rules:{
+        //     "email":webix.rules.isEmail,
+        //     "login":webix.rules.isNotEmpty
+        // },
+        elementsConfig:{
+            labelPosition:"top",
+        }
+    };
 
-<h1>Register:</h1>
+    webix.ui({
+        view:"window",
+        id:"win2",
+        width:300,
+        position:"center",
+        modal:true,
+        head:"Register",
+        body:webix.copy(form)
+    });
 
-<form action="{{ url "LoginController.SaveUser" }}" method="POST">
-  {{with $field := field "user.Username" .}}
-    <p class="{{ $field.ErrorClass }}">
-      <strong>Username:</strong>
-      <input type="text" name="{{ $field.Name }}" size="16" value="{{ $field.Flash }}"> *
-      <span class="error">{{ $field.Error }}</span>
-    </p>
-  {{ end }}
-  {{ with $field := field "user.Name" .}}
-    <p class="{{ $field.ErrorClass }}">
-      <strong>Real name:</strong> <input type="text" name="{{ $field.Name }}" size="16" value="{{ $field.Flash }}"> *
-      <span class="error">{{$field.Error}}</span>
-    </p>
-  {{ end }}
-  {{ with $field := field "user.Password" .}}
-    <p class="{{ $field.ErrorClass }}">
-      <strong>Password:</strong> <input type="password" name="{{ $field.Name }}" size="16" value="{{ $field.Flash }}"> *
-      <span class="error">{{ $field.Error }}</span>
-    </p>
-  {{ end }}
-  {{ with $field := field "verifyPassword" .}}
-    <p class="{{ $field.ErrorClass }}">
-      <strong>Verify password:</strong> <input type="password" name="{{ $field.Name }}" size="16" value="{{ $field.Flash }}"> *
-      <span class="error">{{ $field.Error }}</span>
-    </p>
-  {{ end }}
-  <p class="buttons">
-    <input type="submit" value="Register"> <a href="{{ url "LoginController.Index" }}">Cancel</a>
-  </p>
-</form>
-
-{{ template "footer.html" }}
+    $$("win2").getBody().clear();
+    $$("win2").show();
+    $$("win2").getBody().focus();
+</script>
+</body>
+</html>

@@ -21,7 +21,6 @@ func (app LoginController) Index() revel.Result {
 	return app.Render()
 }
 
-
 // Проверяет является ли сессия авторизованной
 func (app LoginController) connected() *structures.User {
 	//if app.ViewArgs["user"] != nil {
@@ -44,6 +43,10 @@ func (app LoginController) connected() *structures.User {
 //}
 
 func (app LoginController) Register() revel.Result {
+	if app.connected() != nil {
+		return app.Redirect(ApplicationController.Index)
+	}
+
 	return app.Render()
 }
 
